@@ -15,6 +15,10 @@ public class Location implements Comparable<Location>, Serializable {
         this.y = y;
     }
 
+    public String getCoordinates() {
+        return "(" + x + "," + y + ")";
+    }
+
     public int getX() {
         return x;
     }

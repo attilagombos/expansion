@@ -22,6 +22,14 @@ public class Step implements Serializable {
         this.forces = forces;
     }
 
+    public void addForces(int forces) {
+        if (this.forces != null) {
+            this.forces += forces;
+        } else {
+            this.forces = forces;
+        }
+    }
+
     public StepType getType() {
         return type;
     }
@@ -37,6 +45,7 @@ public class Step implements Serializable {
     public Integer getForces() {
         return forces;
     }
+
 
     @Override
     public String toString() {

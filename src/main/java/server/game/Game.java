@@ -1,17 +1,19 @@
 package server.game;
 
 import static java.lang.System.currentTimeMillis;
-import static org.apache.commons.lang3.math.NumberUtils.min;
+import static server.game.stage.Deployment.deploy;
+import static server.game.stage.Engagement.engage;
+import static server.game.stage.Movement.move;
+import static server.game.stage.Reinforcement.reinforce;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import common.model.Region;
-import common.model.Step;
-import server.model.Board;
-import server.model.Player;
+import common.model.Board;
+import common.model.Color;
 import server.service.GameService;
 import server.service.InstructionService;
 import server.service.PlayerService;
@@ -50,28 +52,12 @@ public class Game implements Runnable {
 
         LOG.info("Game started");
 
-        broadcastStatus();
+        playerService.broadcastBoardStatus(board, true);
 
         while (isRunning) {
             long loopStartMillis = currentTimeMillis();
 
-            try {
-                if (instructionService.hasInstructions()) {
-                    deployForces();
-
-                    advanceForces();
-
-                    instructionService.clearInstructions();
-
-                    resolveCombat();
-
-                    generateForces();
-
-                    broadcastStatus();
-                }
-            } catch (Exception e) {
-                LOG.error("Exception during game loop", e);
-            }
+            processLoop();
 
             long processingMillis = currentTimeMillis() - loopStartMillis;
 
@@ -95,50 +81,54 @@ public class Game implements Runnable {
         LOG.info("Game ended");
     }
 
-    private void deployForces() {
-        for (Player player : playerService.getPlayers()) {
-            List<Step> deployments = instructionService.getDeployments(player.getColor());
-            int deployableForces = player.getDeployableForces();
+    private void processLoop() {
+        try {
+            if (instructionService.hasInstructions()) {
 
-            for (Step deployment : deployments) {
-                if (deployableForces > 0) {
-                    Region target = board.getRegion(deployment.getTarget());
+                deploy(board, playerService, instructionService);
 
-                    if (target.getColor() == player.getColor()) {
-                        int forcesToDeploy = min(deployableForces, deployment.getForces());
+                move(board, playerService, instructionService);
 
-                        deployableForces -= forcesToDeploy;
+                engage(board);
 
-                        target.setForces(target.getForces() + forcesToDeploy);
-                    } else {
-                        LOG.warn("Not valid region for deployment. Player color: {}, target region: {} color {}",
-                                player.getColor(), target.getLocation(), target.getColor());
-                    }
-                } else {
-                    LOG.warn("No deployable forces have left");
-                    break;
-                }
+                instructionService.clearInstructions();
             }
 
-            player.setDeployableForces(deployableForces);
+            updateBoard();
+
+            updatePlayers();
+
+            reinforce(playerService);
+
+            playerService.broadcastBoardStatus(board, false);
+        } catch (Exception e) {
+            LOG.error("Exception during game loop", e);
         }
     }
 
-    private void advanceForces() {
+    private void updateBoard() {
+        board.getRegions().values()
+                .stream()
+                .filter(region -> region.getChanges().size() > 0)
+                .forEach(region -> {
+                    Map.Entry<Color, Integer> forces = new ArrayList<>(region.getChanges().entrySet()).get(0);
 
+                    if (region.getColor() == forces.getKey()) {
+                        region.setForces(region.getForces() + forces.getValue());
+                    }
+
+                    region.getChanges().clear();
+                });
     }
 
-    private void resolveCombat() {
+    private void updatePlayers() {
+        playerService.getPlayerMapping().forEach(player -> {
+            player.getTerritory().clear();
+            player.getTerritory().addAll(board.getTerritory(player.getColor()));
 
-    }
-
-    private void generateForces() {
-        for (Player player : playerService.getPlayers()) {
-            player.setDeployableForces(player.getDeployableForces() + 10);
-        }
-    }
-
-    private void broadcastStatus() {
-        playerService.broadcastBoardStatus(board.getLayout(), board.getForcesByColor());
+            if (player.getTerritory().size() == board.getActiveRegionsCount()) {
+                isRunning = false;
+            }
+        });
     }
 }

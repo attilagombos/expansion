@@ -1,10 +1,20 @@
-package common.model;
+package common.model.region;
+
+import common.model.Color;
 
 public class RegionState {
 
     private Color color;
 
     private int forces;
+
+    public RegionState() {
+    }
+
+    public RegionState(Color color, int forces) {
+        this.color = color;
+        this.forces = forces;
+    }
 
     public Color getColor() {
         return color;

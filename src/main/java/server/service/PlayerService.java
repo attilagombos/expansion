@@ -1,8 +1,11 @@
 package server.service;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +16,15 @@ import javax.websocket.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import common.model.BoardStatus;
+import common.layer.LayerWriter;
+import common.model.Board;
+import common.model.BoardState;
 import common.model.Color;
-import common.model.Forces;
+import common.model.GameState;
+import common.model.PlayerState;
 import server.model.Player;
 
 @Service
@@ -25,19 +32,24 @@ public class PlayerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PlayerService.class);
 
-    private final Map<Session, Player> players = new ConcurrentHashMap<>();
+    private final Map<Session, Player> playerMapping = new ConcurrentHashMap<>();
 
-    private List<Color> availableColors;
+    private final List<Color> availableColors = new ArrayList<>(asList(Color.values()));
+
+    private final LayerWriter layerWriter;
+
+    @Autowired
+    public PlayerService(LayerWriter layerWriter) {
+        this.layerWriter = layerWriter;
+    }
 
     public Player registerPlayer(Session session, String playerName) {
         Player player = null;
 
         if (isNotEmpty(availableColors)) {
-            player = new Player(playerName);
+            player = new Player(playerName, availableColors.remove(0));
 
-            player.setColor(availableColors.remove(0));
-
-            players.put(session, player);
+            playerMapping.put(session, player);
         } else {
             LOG.error("No more available colors for this board");
         }
@@ -46,33 +58,34 @@ public class PlayerService {
     }
 
     public void unregisterPlayer(Session session) {
-        players.remove(session);
+        playerMapping.remove(session);
     }
 
-    public Collection<Player> getPlayers() {
-        return players.values();
+    public Collection<Player> getPlayerMapping() {
+        return playerMapping.values();
     }
 
     public int getPlayerCount() {
-        return players.size();
+        return playerMapping.size();
     }
 
     public Player getPlayer(Session session) {
-        return players.get(session);
+        return playerMapping.get(session);
     }
 
-    public void broadcastBoardStatus(String layout, Map<Color, List<Forces>> forcesByColor) {
-        players.forEach((session, player) -> {
+    public void broadcastBoardStatus(Board board, boolean isInitialStatus) {
+        playerMapping.forEach((session, player) -> {
             if (session.isOpen()) {
-                BoardStatus boardStatus = new BoardStatus();
-                boardStatus.setColor(player.getColor());
-                boardStatus.setBase(player.getBase().getLocation());
-                boardStatus.setDeployableForces(player.getDeployableForces());
-                boardStatus.setLayout(layout);
-                boardStatus.setForcesByColor(forcesByColor);
+                PlayerState playerState = new PlayerState(player.getColor(), player.getBase().getLocation(), player.getReinforcements());
+
+                BoardState boardState = isInitialStatus
+                        ? new BoardState(board.getLayout(), EMPTY, EMPTY)
+                        : new BoardState(EMPTY, layerWriter.writeColors(board), layerWriter.writeForces(board));
+
+                GameState gameState = new GameState(playerState, boardState);
 
                 try {
-                    session.getBasicRemote().sendObject(boardStatus);
+                    session.getBasicRemote().sendObject(gameState);
                 } catch (IOException e) {
                     LOG.error("Could not send board status for player: {}", player.getName(), e);
                 } catch (EncodeException e) {
@@ -80,9 +93,5 @@ public class PlayerService {
                 }
             }
         });
-    }
-
-    public void setAvailableColors(List<Color> availableColors) {
-        this.availableColors = availableColors;
     }
 }

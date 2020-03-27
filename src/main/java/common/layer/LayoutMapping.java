@@ -1,18 +1,18 @@
-package server.layout;
+package common.layer;
 
-import static common.model.RegionType.BASE_1;
-import static common.model.RegionType.BASE_2;
-import static common.model.RegionType.BASE_3;
-import static common.model.RegionType.BASE_4;
-import static common.model.RegionType.GOLD;
-import static common.model.RegionType.LAND;
-import static common.model.RegionType.WALL;
+import static common.model.region.RegionType.BASE_1;
+import static common.model.region.RegionType.BASE_2;
+import static common.model.region.RegionType.BASE_3;
+import static common.model.region.RegionType.BASE_4;
+import static common.model.region.RegionType.LAND;
+import static common.model.region.RegionType.MINE;
+import static common.model.region.RegionType.WALL;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 
-import common.model.RegionType;
+import common.model.region.RegionType;
 
 public class LayoutMapping {
 
@@ -23,7 +23,7 @@ public class LayoutMapping {
             ImmutableMap.<RegionType, Character>builder()
                     .put(LAND, ' ')
                     .put(WALL, '#')
-                    .put(GOLD, '$')
+                    .put(MINE, '$')
                     .put(BASE_1, '1')
                     .put(BASE_2, '2')
                     .put(BASE_3, '3')

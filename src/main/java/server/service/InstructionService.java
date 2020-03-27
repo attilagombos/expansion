@@ -1,7 +1,7 @@
 package server.service;
 
-import static common.model.StepType.ADVANCE;
 import static common.model.StepType.DEPLOY;
+import static common.model.StepType.MOVE;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;
@@ -34,15 +34,18 @@ public class InstructionService {
         return getStepsByType(color, DEPLOY);
     }
 
-    public List<Step> getAdvances(Color color) {
-        return getStepsByType(color, ADVANCE);
+    public List<Step> getMovements(Color color) {
+        return getStepsByType(color, MOVE);
     }
 
     private List<Step> getStepsByType(Color color, StepType type) {
         Instruction instruction = instructionCache.get(color);
 
         if (instruction != null) {
-            return instruction.getSteps().stream().filter(step -> step.getType() == type).collect(toList());
+            return instruction.getSteps()
+                    .stream()
+                    .filter(step -> step.getType() == type)
+                    .collect(toList());
         }
 
         return emptyList();

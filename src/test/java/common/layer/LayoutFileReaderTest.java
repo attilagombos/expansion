@@ -1,6 +1,6 @@
-package server.layout;
+package common.layer;
 
-import static common.model.RegionType.BASE_1;
+import static common.model.region.RegionType.BASE_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -8,16 +8,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import common.model.Location;
-import common.model.Region;
-import server.model.Board;
+import common.model.region.Region;
+import common.model.Board;
 
-class LayoutReaderTest {
+class LayoutFileReaderTest {
 
-    private LayoutReader underTest;
+    private LayoutFileReader underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new LayoutReader();
+        underTest = new LayoutFileReader();
     }
 
     @Test
@@ -30,6 +30,6 @@ class LayoutReaderTest {
 
         Region region = result.getRegion(new Location(3, 3));
         assertNotNull(region);
-        assertEquals(BASE_1, region.getType());
+        assertEquals(BASE_3, region.getType());
     }
 }

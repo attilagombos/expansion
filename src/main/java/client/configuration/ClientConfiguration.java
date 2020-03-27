@@ -19,7 +19,7 @@ public class ClientConfiguration {
 
     private String gamePath;
 
-    public String getWebSocketUri() {
+    public String getWebSocketServerUri() {
         return String.format("ws://%s:%d/%s", getServerHost(), getServerPort(), getGamePath());
     }
 

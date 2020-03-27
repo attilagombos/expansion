@@ -6,15 +6,15 @@ import javax.websocket.EndpointConfig;
 
 import com.google.gson.Gson;
 
-import common.model.BoardStatus;
+import common.model.GameState;
 
-public class BoardStatusDecoder implements Decoder.Text<BoardStatus> {
+public class GameStateDecoder implements Decoder.Text<GameState> {
 
     private static Gson gson = new Gson();
 
     @Override
-    public BoardStatus decode(String s) throws DecodeException {
-        return gson.fromJson(s, BoardStatus.class);
+    public GameState decode(String s) throws DecodeException {
+        return gson.fromJson(s, GameState.class);
     }
 
     @Override

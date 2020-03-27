@@ -2,6 +2,7 @@ package server.endpoint;
 
 import java.io.IOException;
 
+import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import common.decoder.InstructionDecoder;
-import common.encoder.BoardStatusEncoder;
+import common.encoder.GameStateEncoder;
 import common.model.Instruction;
 import server.configuration.ServerEndpointConfigurator;
 import server.model.Player;
@@ -28,7 +29,7 @@ import server.service.PlayerService;
 @ServerEndpoint(
         value= "/expansion/{player}",
         configurator = ServerEndpointConfigurator.class,
-        encoders = BoardStatusEncoder.class,
+        encoders = GameStateEncoder.class,
         decoders = InstructionDecoder.class)
 public class GameEndpoint {
 
@@ -79,9 +80,9 @@ public class GameEndpoint {
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose(Session session, CloseReason reason) {
         playerService.unregisterPlayer(session);
-        LOG.info("Session closed: {}", session.getId());
+        LOG.info("Session closed. Id: {}, reason: {}", session.getId(), reason);
     }
 
     @OnError

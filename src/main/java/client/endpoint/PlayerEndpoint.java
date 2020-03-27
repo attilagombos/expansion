@@ -1,12 +1,8 @@
 package client.endpoint;
 
-import static common.model.StepType.DEPLOY;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.PostConstruct;
@@ -28,17 +24,18 @@ import org.springframework.stereotype.Component;
 import client.configuration.ClientConfiguration;
 import client.configuration.ClientEndpointConfigurator;
 import client.configuration.PlayerConfiguration;
-import common.decoder.BoardStatusDecoder;
+import client.strategy.Strategy;
+import common.decoder.GameStateDecoder;
 import common.encoder.InstructionEncoder;
-import common.model.BoardStatus;
+import common.model.BoardState;
+import common.model.GameState;
 import common.model.Instruction;
-import common.model.Location;
-import common.model.Step;
+import common.model.PlayerState;
 
 @Component
 @ClientEndpoint(
         configurator = ClientEndpointConfigurator.class,
-        decoders = BoardStatusDecoder.class,
+        decoders = GameStateDecoder.class,
         encoders = InstructionEncoder.class)
 public class PlayerEndpoint {
 
@@ -48,28 +45,30 @@ public class PlayerEndpoint {
 
     private final PlayerConfiguration playerConfiguration;
 
+    private final Strategy strategy;
+
     private CountDownLatch latch;
 
     @Autowired
-    public PlayerEndpoint(ClientConfiguration clientConfiguration, PlayerConfiguration playerConfiguration) {
+    public PlayerEndpoint(ClientConfiguration clientConfiguration, PlayerConfiguration playerConfiguration, Strategy strategy) {
         this.clientConfiguration = clientConfiguration;
         this.playerConfiguration = playerConfiguration;
+        this.strategy = strategy;
     }
 
     @PostConstruct
     private void connect() {
         try {
-            URI serverUri = new URI(clientConfiguration.getWebSocketUri() + "/" + playerConfiguration.getPlayerName());
+            URI serverUri = new URI(clientConfiguration.getWebSocketServerUri() + "/" + playerConfiguration.getPlayerName());
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            container.setDefaultMaxTextMessageBufferSize(1024 * 1024);
 
             container.connectToServer(this, serverUri);
 
             latch.await();
-        } catch (URISyntaxException ex) {
-            System.err.println("URISyntaxException exception: " + ex.getMessage());
-        } catch (InterruptedException | DeploymentException | IOException e) {
-            e.printStackTrace();
+        } catch (URISyntaxException | InterruptedException | DeploymentException | IOException e) {
+            LOG.error(e.getMessage());
         }
     }
 
@@ -80,37 +79,27 @@ public class PlayerEndpoint {
         latch = new CountDownLatch(1);
     }
 
-    @OnClose
-    public void onClose(Session session, CloseReason reason) {
-        LOG.info("Disconnected from server, session id: {}", session.getId());
-
-        latch.countDown();
-    }
-
     @OnMessage
-    public Instruction onMessage(BoardStatus boardStatus, Session session) {
+    public Instruction onMessage(GameState gameState, Session session) {
         LOG.info("Received board status from server, session id: {}", session.getId());
 
-        LOG.info("My color: {} base: {} deployable forces: {}", boardStatus.getColor(), boardStatus.getBase(), boardStatus.getDeployableForces());
+        PlayerState playerState = gameState.getPlayerState();
 
-        LOG.info("\r\n{}", boardStatus.getForcesByColor().entrySet());
+        LOG.info("My color: {} base: {} reinforcements: {}", playerState.getColor(), playerState.getBase(), playerState.getReinforcements());
 
-        LOG.info("\r\n{}", boardStatus.getLayout());
+        BoardState boardState = gameState.getBoardState();
 
-        Location base = boardStatus.getBase();
+        LOG.info("\r\n{}", boardState.getLayout());
+        LOG.info("\r\n{}", boardState.getColors());
+        LOG.info("\r\n{}", boardState.getForces());
 
-        Instruction instruction = new Instruction();
-
-        List<Step> steps = new ArrayList<>();
-
-        steps.add(new Step(DEPLOY, null, base, boardStatus.getDeployableForces()));
-
-        instruction.setSteps(steps);
-
-        return instruction;
+        return strategy.getInstruction(gameState);
     }
 
-    public void block() throws InterruptedException {
-        latch.await();
+    @OnClose
+    public void onClose(Session session, CloseReason reason) {
+        LOG.info("Disconnected from server, session id: {}, reason: {}", session.getId(), reason);
+
+        latch.countDown();
     }
 }

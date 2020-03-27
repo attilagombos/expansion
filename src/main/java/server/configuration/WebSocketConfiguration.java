@@ -3,6 +3,7 @@ package server.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 @Configuration
 public class WebSocketConfiguration {
@@ -14,6 +15,14 @@ public class WebSocketConfiguration {
 
     @Bean
     public ServerEndpointConfigurator customSpringConfigurator() {
-        return new ServerEndpointConfigurator(); // This is just to get context
+        return new ServerEndpointConfigurator();
+    }
+
+    @Bean
+    public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
+        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+        container.setMaxTextMessageBufferSize(32768);
+        container.setMaxBinaryMessageBufferSize(32768);
+        return container;
     }
 }

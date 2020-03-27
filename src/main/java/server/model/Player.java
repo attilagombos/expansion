@@ -4,24 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.model.Color;
-import common.model.Region;
+import common.model.region.Region;
 
 public class Player {
 
-    private String name;
+    private final String name;
 
-    private Color color;
+    private final Color color;
+
+    private final List<Region> territory = new ArrayList<>();
 
     private Region base;
 
-    private int deployableForces;
+    private int reinforcements;
 
-    private int deployedForces;
-
-    private List<Region> territory = new ArrayList<>();
-
-    public Player(String name) {
+    public Player(String name, Color color) {
         this.name = name;
+        this.color = color;
     }
 
     public String getName() {
@@ -32,8 +31,8 @@ public class Player {
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public List<Region> getTerritory() {
+        return territory;
     }
 
     public Region getBase() {
@@ -44,23 +43,11 @@ public class Player {
         this.base = base;
     }
 
-    public int getDeployableForces() {
-        return deployableForces;
+    public int getReinforcements() {
+        return reinforcements;
     }
 
-    public void setDeployableForces(int deployableForces) {
-        this.deployableForces = deployableForces;
-    }
-
-    public int getDeployedForces() {
-        return deployedForces;
-    }
-
-    public void setDeployedForces(int deployedForces) {
-        this.deployedForces = deployedForces;
-    }
-
-    public List<Region> getTerritory() {
-        return territory;
+    public void setReinforcements(int reinforcements) {
+        this.reinforcements = reinforcements;
     }
 }

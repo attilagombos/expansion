@@ -2,6 +2,8 @@ package common.model;
 
 import java.io.Serializable;
 
+import common.model.region.Region;
+
 public class Forces implements Serializable {
 
     private int x;
