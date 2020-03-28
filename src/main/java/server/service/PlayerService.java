@@ -74,13 +74,13 @@ public class PlayerService {
     }
 
     public void broadcastBoardStatus(Board board, boolean isInitialStatus) {
+        BoardState boardState = isInitialStatus
+                ? new BoardState(layerWriter.writeLayout(board), EMPTY, EMPTY)
+                : new BoardState(EMPTY, layerWriter.writeColors(board), layerWriter.writeForces(board));
+
         playerMapping.forEach((session, player) -> {
             if (session.isOpen()) {
                 PlayerState playerState = new PlayerState(player.getColor(), player.getBase().getLocation(), player.getReinforcements());
-
-                BoardState boardState = isInitialStatus
-                        ? new BoardState(board.getLayout(), EMPTY, EMPTY)
-                        : new BoardState(EMPTY, layerWriter.writeColors(board), layerWriter.writeForces(board));
 
                 GameState gameState = new GameState(playerState, boardState);
 

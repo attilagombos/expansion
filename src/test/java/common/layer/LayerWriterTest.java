@@ -2,8 +2,8 @@ package common.layer;
 
 import static common.model.region.RegionType.BASE_1;
 import static common.model.region.RegionType.BASE_2;
-import static common.model.region.RegionType.MINE;
 import static common.model.region.RegionType.LAND;
+import static common.model.region.RegionType.MINE;
 import static common.model.region.RegionType.WALL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
+import common.model.Board;
 import common.model.Location;
 import common.model.region.Region;
 import common.model.region.RegionType;
-import common.model.Board;
 
 class LayerWriterTest {
 

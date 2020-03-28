@@ -52,7 +52,6 @@ public class GameService {
     @PostConstruct
     public void initialize() {
         board = layoutFileReader.read(gameConfiguration.getLayoutPath());
-        board.setLayout(layerWriter.writeLayout(board));
     }
 
     public void playerConnected(Player player) {

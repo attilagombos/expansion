@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import common.model.Board;
 import common.model.Location;
 import common.model.region.Region;
-import common.model.Board;
 
 class LayoutFileReaderTest {
 

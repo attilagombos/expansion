@@ -15,8 +15,6 @@ public class Board {
 
     private final MultiKeyMap<Integer, Region> regions = new MultiKeyMap<>();
 
-    private String layout;
-
     private Location begin;
     private Location end;
 
@@ -66,13 +64,5 @@ public class Board {
 
     public Pair<Location, Location> getDimensions() {
         return new ImmutablePair<>(begin, end);
-    }
-
-    public String getLayout() {
-        return layout;
-    }
-
-    public void setLayout(String layout) {
-        this.layout = layout;
     }
 }
