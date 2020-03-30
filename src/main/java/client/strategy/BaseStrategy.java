@@ -120,6 +120,18 @@ public class BaseStrategy implements IStrategy {
                 }
             }
 
+            for (Node<Region> adjacent : border.getAdjacency()) {
+                if (forces > 0) {
+                    if (adjacent.getValue().getColor() == null && adjacent.isNotVisited()) {
+                        adjacent.setVisited();
+                        instruction.addStep(new Step(MOVE, border.getValue().getLocation(), adjacent.getValue().getLocation(), 1));
+                        forces--;
+                    }
+                } else {
+                    break;
+                }
+            }
+
             while (forces > 0) {
                 for (Node<Region> adjacent : border.getAdjacency()) {
                     if (forces > 0) {

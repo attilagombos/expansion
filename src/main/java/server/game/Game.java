@@ -52,6 +52,8 @@ public class Game implements Runnable {
 
         LOG.info("Game started");
 
+        board.setActive(isRunning);
+
         gameService.broadcast(board, true);
 
         while (isRunning) {
@@ -59,9 +61,10 @@ public class Game implements Runnable {
 
             processLoop();
 
-            long processingMillis = currentTimeMillis() - loopStartMillis;
+            if (isRunning) {
 
-            try {
+                long processingMillis = currentTimeMillis() - loopStartMillis;
+
                 long sleepForMillis;
 
                 if (processingMillis <= loopPeriodMillis) {
@@ -72,15 +75,21 @@ public class Game implements Runnable {
 
                 LOG.info("Game thread is sleeping for {} millis", sleepForMillis);
 
-                Thread.sleep(sleepForMillis);
-            } catch (InterruptedException e) {
-                LOG.error("Could not make game thread sleep, stopping game!", e);
+                try {
+                    Thread.sleep(sleepForMillis);
+                } catch (InterruptedException e) {
+                    LOG.error("Could not make game thread sleep, stopping game!", e);
+                }
             }
         }
 
         gameService.broadcast(board, false);
 
         LOG.info("Game ended");
+
+        board.clean();
+
+        playerService.closeSessions();
     }
 
     private void processLoop() {
@@ -101,6 +110,8 @@ public class Game implements Runnable {
             updatePlayers();
 
             reinforce(playerService);
+
+            board.setActive(isRunning);
 
             gameService.broadcast(board, false);
         } catch (Exception e) {

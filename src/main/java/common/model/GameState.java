@@ -5,11 +5,21 @@ import java.util.List;
 
 public class GameState implements Serializable {
 
+    private Boolean isRunning;
+
     private BoardState boardState = new BoardState();
 
     private List<PlayerState> playerStates;
 
     public GameState() {
+    }
+
+    public Boolean getRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(Boolean running) {
+        isRunning = running;
     }
 
     public BoardState getBoardState() {

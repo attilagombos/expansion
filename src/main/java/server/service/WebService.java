@@ -54,6 +54,7 @@ public class WebService {
         BoardState boardState = new BoardState(layerWriter.writeLayout(board), layerWriter.writeColors(board), layerWriter.writeForces(board));
 
         GameState gameState = new GameState();
+        gameState.setRunning(board.isActive());
         gameState.setBoardState(boardState);
         gameState.setPlayerStates(playerStates);
 

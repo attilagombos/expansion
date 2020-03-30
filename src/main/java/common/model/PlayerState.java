@@ -18,6 +18,8 @@ public class PlayerState implements Serializable {
 
     private Integer lands;
 
+    private Integer forces;
+
     private Integer reinforcements;
 
     public PlayerState() {
@@ -77,6 +79,14 @@ public class PlayerState implements Serializable {
 
     public void setLands(Integer lands) {
         this.lands = lands;
+    }
+
+    public Integer getForces() {
+        return forces;
+    }
+
+    public void setForces(Integer forces) {
+        this.forces = forces;
     }
 
     public Integer getReinforcements() {

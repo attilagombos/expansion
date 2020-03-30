@@ -13,6 +13,8 @@ import common.model.region.Region;
 
 public class Board {
 
+    private boolean isActive;
+
     private final MultiKeyMap<Integer, Region> regions = new MultiKeyMap<>();
 
     private Location begin;
@@ -64,5 +66,20 @@ public class Board {
 
     public Pair<Location, Location> getDimensions() {
         return new ImmutablePair<>(begin, end);
+    }
+
+    public void clean() {
+        regions.values().forEach(region -> {
+            region.setColor(null);
+            region.setForces(0);
+        });
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

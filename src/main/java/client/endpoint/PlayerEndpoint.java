@@ -10,6 +10,7 @@ import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
+import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -28,7 +29,6 @@ import client.strategy.IStrategy;
 import common.decoder.GameStateDecoder;
 import common.encoder.InstructionEncoder;
 import common.model.GameState;
-import common.model.Instruction;
 import common.model.PlayerState;
 
 @Component
@@ -79,23 +79,19 @@ public class PlayerEndpoint {
     }
 
     @OnMessage
-    public Instruction onMessage(GameState gameState, Session session) {
-        LOG.info("Received board status from server, session id: {}", session.getId());
+    public void onMessage(GameState gameState, Session session) throws IOException, EncodeException {
+        LOG.info("Received game status from server, session id: {}", session.getId());
 
         PlayerState playerState = gameState.getPlayerStates().get(0);
 
         LOG.info("My name: {} color: {} base: {}",
-                playerState.getName(), playerState.getColor(), playerState.getBase());
-        LOG.info("My bases: {} mines: {} lands: {} reinforcements: {}",
-                playerState.getBases(), playerState.getMines(), playerState.getLands(), playerState.getReinforcements());
+                playerState.getName(), playerState.getColor(), playerState.getBase().getCoordinates());
+        LOG.info("My bases: {} mines: {} lands: {} forces: {} reinforcements: {}",
+                playerState.getBases(), playerState.getMines(), playerState.getLands(), playerState.getForces(), playerState.getReinforcements());
 
-        //BoardState boardState = gameState.getBoardState();
-
-        //LOG.info("\r\n{}", boardState.getLayout());
-        //LOG.info("\r\n{}", boardState.getForces());
-        //LOG.info("\r\n{}", boardState.getColors());
-
-        return strategy.getInstruction(gameState);
+        if (gameState.getRunning()) {
+            session.getBasicRemote().sendObject(strategy.getInstruction(gameState));
+        }
     }
 
     @OnClose

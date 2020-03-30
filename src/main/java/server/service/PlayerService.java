@@ -6,6 +6,7 @@ import static common.model.region.RegionType.MINE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.shuffle;
 import static java.util.Collections.singletonList;
+import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.websocket.CloseReason;
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
 
@@ -31,6 +33,7 @@ import common.model.BoardState;
 import common.model.Color;
 import common.model.GameState;
 import common.model.PlayerState;
+import common.model.region.Region;
 import server.model.Player;
 
 @Service
@@ -100,11 +103,13 @@ public class PlayerService {
                 playerState.setBases((int) player.getTerritory().stream().filter(region -> region.getType() == BASE).count());
                 playerState.setMines((int) player.getTerritory().stream().filter(region -> region.getType() == MINE).count());
                 playerState.setLands((int) player.getTerritory().stream().filter(region -> region.getType() == LAND).count());
+                playerState.setForces(player.getTerritory().stream().mapToInt(Region::getForces).sum());
                 playerState.setReinforcements(player.getReinforcements());
 
                 playerStates.add(playerState);
 
                 GameState gameState = new GameState();
+                gameState.setRunning(board.isActive());
                 gameState.setBoardState(boardState);
                 gameState.setPlayerStates(singletonList(playerState));
 
@@ -119,5 +124,18 @@ public class PlayerService {
         });
 
         return playerStates;
+    }
+
+    public void closeSessions() {
+        playerMapping.keySet().forEach(session -> {
+            try {
+                session.close(new CloseReason(NORMAL_CLOSURE,"Game has ended"));
+            } catch (IOException e) {
+                LOG.error("Could not close session {}", session.getId());
+            }
+        });
+
+        availableColors.clear();
+        availableColors.addAll(asList(Color.values()));
     }
 }
