@@ -110,6 +110,7 @@ public class PlayerService {
 
                 GameState gameState = new GameState();
                 gameState.setRunning(board.isActive());
+                gameState.setRounds(board.getLoopCounter());
                 gameState.setBoardState(boardState);
                 gameState.setPlayerStates(singletonList(playerState));
 

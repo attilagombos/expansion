@@ -84,8 +84,8 @@ public class PlayerEndpoint {
 
         PlayerState playerState = gameState.getPlayerStates().get(0);
 
-        LOG.info("My name: {} color: {} base: {}",
-                playerState.getName(), playerState.getColor(), playerState.getBase().getCoordinates());
+        LOG.info("My name: {} color: {} base: {} round: {}",
+                playerState.getName(), playerState.getColor(), playerState.getBase().getCoordinates(), gameState.getRounds());
         LOG.info("My bases: {} mines: {} lands: {} forces: {} reinforcements: {}",
                 playerState.getBases(), playerState.getMines(), playerState.getLands(), playerState.getForces(), playerState.getReinforcements());
 

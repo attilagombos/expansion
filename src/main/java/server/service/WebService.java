@@ -29,7 +29,7 @@ public class WebService {
 
     private final Set<Session> sessions = new HashSet<>();
 
-    private GameState gameStateCache = new GameState();
+    private GameState gameStateCache;
 
     @Autowired
     public WebService(@Qualifier("HtmlWriter") ILayerWriter layerWriter) {
@@ -55,11 +55,12 @@ public class WebService {
 
         GameState gameState = new GameState();
         gameState.setRunning(board.isActive());
+        gameState.setRounds(board.getLoopCounter());
         gameState.setBoardState(boardState);
         gameState.setPlayerStates(playerStates);
 
         for (Session session : sessions) {
-            sendBoardState(session, gameStateCache);
+            sendBoardState(session, gameState);
         }
 
         gameStateCache = gameState;

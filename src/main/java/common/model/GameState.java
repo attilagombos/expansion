@@ -7,6 +7,8 @@ public class GameState implements Serializable {
 
     private Boolean isRunning;
 
+    private Integer rounds;
+
     private BoardState boardState = new BoardState();
 
     private List<PlayerState> playerStates;
@@ -20,6 +22,14 @@ public class GameState implements Serializable {
 
     public void setRunning(Boolean running) {
         isRunning = running;
+    }
+
+    public Integer getRounds() {
+        return rounds;
+    }
+
+    public void setRounds(Integer rounds) {
+        this.rounds = rounds;
     }
 
     public BoardState getBoardState() {

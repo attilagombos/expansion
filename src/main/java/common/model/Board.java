@@ -1,5 +1,6 @@
 package common.model;
 
+import static common.model.region.RegionType.BASE;
 import static common.model.region.RegionType.WALL;
 import static java.util.stream.Collectors.toList;
 
@@ -14,6 +15,7 @@ import common.model.region.Region;
 public class Board {
 
     private boolean isActive;
+    private int loopCounter;
 
     private final MultiKeyMap<Integer, Region> regions = new MultiKeyMap<>();
 
@@ -68,7 +70,17 @@ public class Board {
         return new ImmutablePair<>(begin, end);
     }
 
+    public List<Region> getBases() {
+        return regions.values()
+                .stream()
+                .filter(region -> region.getType() == BASE)
+                .filter(region -> region.getColor() == null)
+                .collect(toList());
+    }
+
     public void clean() {
+        loopCounter = 0;
+
         regions.values().forEach(region -> {
             region.setColor(null);
             region.setForces(0);
@@ -81,5 +93,13 @@ public class Board {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public int getLoopCounter() {
+        return loopCounter;
+    }
+
+    public void incrementLoopCounter() {
+        loopCounter++;
     }
 }

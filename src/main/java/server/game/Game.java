@@ -87,13 +87,15 @@ public class Game implements Runnable {
 
         LOG.info("Game ended");
 
-        board.clean();
-
         playerService.closeSessions();
+
+        board.clean();
     }
 
     private void processLoop() {
         try {
+            board.incrementLoopCounter();
+
             if (instructionService.hasInstructions()) {
 
                 deploy(board, playerService, instructionService);

@@ -1,8 +1,7 @@
 package server.service;
 
-import static common.model.region.RegionType.BASE;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.shuffle;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.util.List;
@@ -56,14 +55,12 @@ public class GameService {
     @PostConstruct
     public void initialize() {
         board = layoutFileReader.read(gameConfiguration.getLayoutPath());
+
+        webService.broadcast(board, emptyList());
     }
 
     public void playerConnected(Player player) {
-        List<Region> bases = board.getRegions().values()
-                .stream()
-                .filter(region -> region.getType() == BASE)
-                .filter(region -> region.getColor() == null)
-                .collect(toList());
+        List<Region> bases = board.getBases();
 
         if (isNotEmpty(bases)) {
             shuffle(bases);
@@ -78,6 +75,8 @@ public class GameService {
 
             if (playerService.getPlayerCount() == gameConfiguration.getPlayerLimit()) {
                 startGame();
+            } else {
+                webService.broadcast(board, emptyList());
             }
         } else {
             LOG.error("Not enough bases for players");
