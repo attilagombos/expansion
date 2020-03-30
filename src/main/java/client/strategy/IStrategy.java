@@ -3,7 +3,7 @@ package client.strategy;
 import common.model.GameState;
 import common.model.Instruction;
 
-public interface Strategy {
+public interface IStrategy {
 
     Instruction getInstruction(GameState gameState);
 }

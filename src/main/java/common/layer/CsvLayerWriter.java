@@ -21,30 +21,36 @@ import common.model.Color;
 import common.model.Location;
 import common.model.region.Region;
 
-@Component
-public class LayerWriter {
+@Component("CsvWriter")
+public class CsvLayerWriter implements ILayerWriter {
+
+    private String layoutCache = null;
 
     public String writeLayout(Board board) {
-        List<String> rows = new ArrayList<>();
+        if (layoutCache == null) {
+            List<String> rows = new ArrayList<>();
 
-        Pair<Location, Location> dimensions = board.getDimensions();
-        Location begin = dimensions.getLeft();
-        Location end = dimensions.getRight();
+            Pair<Location, Location> dimensions = board.getDimensions();
+            Location begin = dimensions.getLeft();
+            Location end = dimensions.getRight();
 
-        for (int locationY = end.getY(); locationY >= begin.getY(); locationY--) {
-            List<String> row = new ArrayList<>();
+            for (int locationY = end.getY(); locationY >= begin.getY(); locationY--) {
+                List<String> row = new ArrayList<>();
 
-            for (int locationX = begin.getX(); locationX <= end.getX(); locationX++) {
-                Location location = new Location(locationX, locationY);
-                Region region = board.getRegion(location);
+                for (int locationX = begin.getX(); locationX <= end.getX(); locationX++) {
+                    Location location = new Location(locationX, locationY);
+                    Region region = board.getRegion(location);
 
-                row.add(regionTypeToSymbol(region.getType()).toString());
+                    row.add(regionTypeToSymbol(region.getType()).toString());
+                }
+
+                rows.add(join(COLUMN_DELIMITER, row));
             }
 
-            rows.add(join(COLUMN_DELIMITER, row));
+            layoutCache = join(ROW_DELIMITER, rows);
         }
 
-        return join(ROW_DELIMITER, rows);
+        return layoutCache;
     }
 
     public String writeColors(Board board) {

@@ -1,7 +1,6 @@
 package common.layer;
 
-import static common.model.region.RegionType.BASE_1;
-import static common.model.region.RegionType.BASE_2;
+import static common.model.region.RegionType.BASE;
 import static common.model.region.RegionType.LAND;
 import static common.model.region.RegionType.MINE;
 import static common.model.region.RegionType.WALL;
@@ -19,13 +18,13 @@ import common.model.Location;
 import common.model.region.Region;
 import common.model.region.RegionType;
 
-class LayerWriterTest {
+class CsvLayerWriterTest {
 
-    private LayerWriter underTest;
+    private CsvLayerWriter underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new LayerWriter();
+        underTest = new CsvLayerWriter();
     }
 
     @Test
@@ -33,9 +32,9 @@ class LayerWriterTest {
         // Given
         List<Region> regions = ImmutableList.<Region>builder()
                 .add(region(0, 4, WALL)).add(region(1, 4, WALL)).add(region(2, 4, WALL)).add(region(3, 4, WALL)).add(region(4, 4, WALL))
-                .add(region(0, 3, WALL)).add(region(1, 3, BASE_1)).add(region(2, 3, LAND)).add(region(3, 3, MINE)).add(region(4, 3, WALL))
+                .add(region(0, 3, WALL)).add(region(1, 3, BASE)).add(region(2, 3, LAND)).add(region(3, 3, MINE)).add(region(4, 3, WALL))
                 .add(region(0, 2, WALL)).add(region(1, 2, LAND)).add(region(2, 2, LAND)).add(region(3, 2, LAND)).add(region(4, 2, WALL))
-                .add(region(0, 1, WALL)).add(region(1, 1, MINE)).add(region(2, 1, LAND)).add(region(3, 1, BASE_2)).add(region(4, 1, WALL))
+                .add(region(0, 1, WALL)).add(region(1, 1, MINE)).add(region(2, 1, LAND)).add(region(3, 1, BASE)).add(region(4, 1, WALL))
                 .add(region(0, 0, WALL)).add(region(1, 0, WALL)).add(region(2, 0, WALL)).add(region(3, 0, WALL)).add(region(4, 0, WALL))
                 .build();
 
@@ -49,9 +48,9 @@ class LayerWriterTest {
         // Then
         assertEquals("" +
                         "#,#,#,#,#\r\n" +
-                        "#,1, ,$,#\r\n" +
+                        "#,@, ,$,#\r\n" +
                         "#, , , ,#\r\n" +
-                        "#,$, ,2,#\r\n" +
+                        "#,$, ,@,#\r\n" +
                         "#,#,#,#,#", result);
     }
 

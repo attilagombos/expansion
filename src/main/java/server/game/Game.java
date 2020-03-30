@@ -52,7 +52,7 @@ public class Game implements Runnable {
 
         LOG.info("Game started");
 
-        playerService.broadcastBoardStatus(board, true);
+        gameService.broadcast(board, true);
 
         while (isRunning) {
             long loopStartMillis = currentTimeMillis();
@@ -78,6 +78,8 @@ public class Game implements Runnable {
             }
         }
 
+        gameService.broadcast(board, false);
+
         LOG.info("Game ended");
     }
 
@@ -100,7 +102,7 @@ public class Game implements Runnable {
 
             reinforce(playerService);
 
-            playerService.broadcastBoardStatus(board, false);
+            gameService.broadcast(board, false);
         } catch (Exception e) {
             LOG.error("Exception during game loop", e);
         }

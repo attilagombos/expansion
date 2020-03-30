@@ -7,8 +7,6 @@ import static common.model.Color.ofOrdinal;
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import common.model.Board;
@@ -17,10 +15,8 @@ import common.model.Location;
 import common.model.region.Region;
 import common.model.region.RegionType;
 
-@Component
-public class LayerReader {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LayerReader.class);
+@Component("CsvReader")
+public class CsvLayerReader implements ILayerReader {
 
     public Board readLayout(String layoutLayer) {
         Board board = new Board();

@@ -1,8 +1,10 @@
 package server.service;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.shuffle;
+import static java.util.Collections.singletonList;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.logging.log4j.util.Strings.EMPTY;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,9 +19,10 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import common.layer.LayerWriter;
+import common.layer.ILayerWriter;
 import common.model.Board;
 import common.model.BoardState;
 import common.model.Color;
@@ -36,10 +39,10 @@ public class PlayerService {
 
     private final List<Color> availableColors = new ArrayList<>(asList(Color.values()));
 
-    private final LayerWriter layerWriter;
+    private final ILayerWriter layerWriter;
 
     @Autowired
-    public PlayerService(LayerWriter layerWriter) {
+    public PlayerService(@Qualifier("CsvWriter") ILayerWriter layerWriter) {
         this.layerWriter = layerWriter;
     }
 
@@ -47,6 +50,8 @@ public class PlayerService {
         Player player = null;
 
         if (isNotEmpty(availableColors)) {
+            shuffle(availableColors);
+
             player = new Player(playerName, availableColors.remove(0));
 
             playerMapping.put(session, player);
@@ -57,8 +62,8 @@ public class PlayerService {
         return player;
     }
 
-    public void unregisterPlayer(Session session) {
-        playerMapping.remove(session);
+    public Player unregisterPlayer(Session session) {
+        return playerMapping.remove(session);
     }
 
     public Collection<Player> getPlayerMapping() {
@@ -73,25 +78,45 @@ public class PlayerService {
         return playerMapping.get(session);
     }
 
-    public void broadcastBoardStatus(Board board, boolean isInitialStatus) {
-        BoardState boardState = isInitialStatus
-                ? new BoardState(layerWriter.writeLayout(board), EMPTY, EMPTY)
-                : new BoardState(EMPTY, layerWriter.writeColors(board), layerWriter.writeForces(board));
+    public List<PlayerState> getPlayerStates() {
+        List<PlayerState> playerStates = new ArrayList<>();
+
+        playerMapping.values().forEach(player -> {
+            playerStates.add(new PlayerState(player.getColor(), player.getBase().getLocation(), player.getReinforcements()));
+        });
+
+        return playerStates;
+    }
+
+    public List<PlayerState> broadcast(Board board, boolean isInitialStatus) {
+        List<PlayerState> playerStates = new ArrayList<>();
+
+        String layoutLayer = layerWriter.writeLayout(board);
+        String colorsLayer = layerWriter.writeColors(board);
+        String forcesLayer = layerWriter.writeForces(board);
+
+        BoardState boardState = isInitialStatus ? new BoardState(layoutLayer, EMPTY, EMPTY) : new BoardState(EMPTY, colorsLayer, forcesLayer);
 
         playerMapping.forEach((session, player) -> {
             if (session.isOpen()) {
                 PlayerState playerState = new PlayerState(player.getColor(), player.getBase().getLocation(), player.getReinforcements());
 
-                GameState gameState = new GameState(playerState, boardState);
+                playerStates.add(playerState);
+
+                GameState gameState = new GameState();
+                gameState.setBoardState(boardState);
+                gameState.setPlayerStates(singletonList(playerState));
 
                 try {
                     session.getBasicRemote().sendObject(gameState);
                 } catch (IOException e) {
-                    LOG.error("Could not send board status for player: {}", player.getName(), e);
+                    LOG.error("Could not send game state for player: {}", player.getName(), e);
                 } catch (EncodeException e) {
-                    LOG.error("Could not encode board status for player: {}", player.getName(), e);
+                    LOG.error("Could not encode game state for player: {}", player.getName(), e);
                 }
             }
         });
+
+        return playerStates;
     }
 }

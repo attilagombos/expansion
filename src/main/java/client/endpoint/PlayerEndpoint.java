@@ -24,10 +24,9 @@ import org.springframework.stereotype.Component;
 import client.configuration.ClientConfiguration;
 import client.configuration.ClientEndpointConfigurator;
 import client.configuration.PlayerConfiguration;
-import client.strategy.Strategy;
+import client.strategy.IStrategy;
 import common.decoder.GameStateDecoder;
 import common.encoder.InstructionEncoder;
-import common.model.BoardState;
 import common.model.GameState;
 import common.model.Instruction;
 import common.model.PlayerState;
@@ -45,12 +44,12 @@ public class PlayerEndpoint {
 
     private final PlayerConfiguration playerConfiguration;
 
-    private final Strategy strategy;
+    private final IStrategy strategy;
 
     private CountDownLatch latch;
 
     @Autowired
-    public PlayerEndpoint(ClientConfiguration clientConfiguration, PlayerConfiguration playerConfiguration, Strategy strategy) {
+    public PlayerEndpoint(ClientConfiguration clientConfiguration, PlayerConfiguration playerConfiguration, IStrategy strategy) {
         this.clientConfiguration = clientConfiguration;
         this.playerConfiguration = playerConfiguration;
         this.strategy = strategy;
@@ -83,15 +82,15 @@ public class PlayerEndpoint {
     public Instruction onMessage(GameState gameState, Session session) {
         LOG.info("Received board status from server, session id: {}", session.getId());
 
-        PlayerState playerState = gameState.getPlayerState();
+        PlayerState playerState = gameState.getPlayerStates().get(0);
 
         LOG.info("My color: {} base: {} reinforcements: {}", playerState.getColor(), playerState.getBase(), playerState.getReinforcements());
 
-        BoardState boardState = gameState.getBoardState();
+        //BoardState boardState = gameState.getBoardState();
 
-        LOG.info("\r\n{}", boardState.getLayout());
-        LOG.info("\r\n{}", boardState.getColors());
-        LOG.info("\r\n{}", boardState.getForces());
+        //LOG.info("\r\n{}", boardState.getLayout());
+        //LOG.info("\r\n{}", boardState.getForces());
+        //LOG.info("\r\n{}", boardState.getColors());
 
         return strategy.getInstruction(gameState);
     }

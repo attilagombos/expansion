@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameConfiguration {
 
-    private static final String DEFAULT_LAYOUT_PATH = "src/main/resources/layout1.csv";
+    private static final String DEFAULT_LAYOUT_PATH = "src/main/resources/layouts/layout1.csv";
 
     private static final int DEFAULT_PLAYER_LIMIT = 4;
 

@@ -11,7 +11,7 @@ public class ClientConfiguration {
 
     private static final int DEFAULT_SERVER_PORT = 8080;
 
-    private static final String DEFAULT_GAME_PATH = "expansion";
+    private static final String DEFAULT_GAME_PATH = "expansion/game";
 
     private String serverHost;
 

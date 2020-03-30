@@ -1,9 +1,6 @@
 package common.layer;
 
-import static common.model.region.RegionType.BASE_1;
-import static common.model.region.RegionType.BASE_2;
-import static common.model.region.RegionType.BASE_3;
-import static common.model.region.RegionType.BASE_4;
+import static common.model.region.RegionType.BASE;
 import static common.model.region.RegionType.LAND;
 import static common.model.region.RegionType.MINE;
 import static common.model.region.RegionType.WALL;
@@ -24,10 +21,7 @@ public class LayoutMapping {
                     .put(LAND, ' ')
                     .put(WALL, '#')
                     .put(MINE, '$')
-                    .put(BASE_1, '1')
-                    .put(BASE_2, '2')
-                    .put(BASE_3, '3')
-                    .put(BASE_4, '4')
+                    .put(BASE, '@')
                     .build());
 
     public static RegionType symbolToRegionType(Character symbol) {

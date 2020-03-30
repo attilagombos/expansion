@@ -27,7 +27,7 @@ import server.service.PlayerService;
 
 @Component
 @ServerEndpoint(
-        value= "/expansion/{player}",
+        value= "/expansion/game/{player}",
         configurator = ServerEndpointConfigurator.class,
         encoders = GameStateEncoder.class,
         decoders = InstructionDecoder.class)
@@ -81,12 +81,12 @@ public class GameEndpoint {
 
     @OnClose
     public void onClose(Session session, CloseReason reason) {
-        playerService.unregisterPlayer(session);
-        LOG.info("Session closed. Id: {}, reason: {}", session.getId(), reason);
+        Player player = playerService.unregisterPlayer(session);
+        LOG.info("Player {} session closed. Id: {}, {}", player.getName(), session.getId(), reason);
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        LOG.error("Error for session id: {}, reason: {}", session.getId(), throwable.getMessage());
+        LOG.error("Error for session id: {}, {}", session.getId(), throwable.getMessage());
     }
 }

@@ -13,11 +13,12 @@ import java.util.Set;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import client.model.Grid;
 import client.model.Node;
-import common.layer.LayerReader;
+import common.layer.ILayerReader;
 import common.model.Board;
 import common.model.BoardState;
 import common.model.GameState;
@@ -28,16 +29,16 @@ import common.model.Step;
 import common.model.region.Region;
 
 @Component
-public class BaseStrategy implements Strategy {
+public class BaseStrategy implements IStrategy {
 
-    private final LayerReader layerReader;
+    private final ILayerReader layerReader;
 
     private Board board = null;
 
     private Grid<Region> grid = null;
 
     @Autowired
-    public BaseStrategy(LayerReader layerReader) {
+    public BaseStrategy(@Qualifier("CsvReader") ILayerReader layerReader) {
         this.layerReader = layerReader;
     }
 
@@ -49,19 +50,16 @@ public class BaseStrategy implements Strategy {
 
         Instruction instruction = new Instruction();
 
-        PlayerState playerState = gameState.getPlayerState();
+        PlayerState playerState = gameState.getPlayerStates().get(0);
 
         Set<Node<Region>> territory = getTerritory(playerState);
 
         Set<Node<Region>> borderNodes = new HashSet<>();
 
-        Set<Node<Region>> reachableNodes = new HashSet<>();
-
         for (Node<Region> node : territory) {
             for (Node<Region> adjacent : node.getAdjacency()) {
                 if (node.getValue().getColor() != adjacent.getValue().getColor()) {
                     borderNodes.add(node);
-                    reachableNodes.add(adjacent);
                 }
             }
         }
@@ -77,21 +75,14 @@ public class BaseStrategy implements Strategy {
             }
         }
 
-        //Set<Node<Region>> minesAndBases = new HashSet<>(grid.getNodes().values());
-        //minesAndBases.removeAll(territory);
-        //minesAndBases = minesAndBases.stream()
-        //        .filter(node -> node.getValue().getType() == MINE || BASES.contains(node.getValue().getType()))
-        //        .collect(toSet());
-
         int reinforcements = playerState.getReinforcements();
 
         while (reinforcements > 0) {
             for (Node<Region> border : borderNodes) {
                 if (reinforcements > 0) {
-                    int toDeploy = 1;
-                    instruction.addStep(new Step(DEPLOY, null, border.getValue().getLocation(), toDeploy));
-                    border.getValue().setForces(border.getValue().getForces() + toDeploy);
-                    reinforcements -= toDeploy;
+                    instruction.addStep(new Step(DEPLOY, null, border.getValue().getLocation(), 1));
+                    border.getValue().setForces(border.getValue().getForces() + 1);
+                    reinforcements--;
                 } else {
                     break;
                 }
@@ -99,8 +90,6 @@ public class BaseStrategy implements Strategy {
         }
 
         for (Node<Region> border : borderNodes) {
-            //Node<Region> closestMineOrBase = getClosest(border, minesAndBases);
-            //Node<Region> closestAdjacent = getClosestDifferentAdjacent(border, closestMineOrBase);
             int forces = border.getValue().getForces() - 1;
             while (forces > 0) {
                 for (Node<Region> adjacent : border.getAdjacency()) {
@@ -156,13 +145,6 @@ public class BaseStrategy implements Strategy {
 
     private Node<Region> getClosestAdjacent(Node<Region> source, Node<Region> target) {
         return source.getAdjacency().stream().min(comparingInt(adjacent -> getDistance(adjacent, target))).orElse(source);
-    }
-
-    private Node<Region> getClosestDifferentAdjacent(Node<Region> source, Node<Region> target) {
-        return source.getAdjacency().stream()
-                .filter(adjacent -> adjacent.getValue().getColor() != source.getValue().getColor())
-                .min(comparingInt(adjacent -> getDistance(adjacent, target)))
-                .orElse(source);
     }
 
     private int getDistance(Node<Region> node1, Node<Region> node2) {

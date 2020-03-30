@@ -1,27 +1,15 @@
 package common.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class GameState implements Serializable {
 
-    private PlayerState playerState;
+    private BoardState boardState = new BoardState();
 
-    private BoardState boardState;
+    private List<PlayerState> playerStates;
 
     public GameState() {
-    }
-
-    public GameState(PlayerState playerState, BoardState boardState) {
-        this.playerState = playerState;
-        this.boardState = boardState;
-    }
-
-    public PlayerState getPlayerState() {
-        return playerState;
-    }
-
-    public void setPlayerState(PlayerState playerState) {
-        this.playerState = playerState;
     }
 
     public BoardState getBoardState() {
@@ -30,5 +18,13 @@ public class GameState implements Serializable {
 
     public void setBoardState(BoardState boardState) {
         this.boardState = boardState;
+    }
+
+    public List<PlayerState> getPlayerStates() {
+        return playerStates;
+    }
+
+    public void setPlayerStates(List<PlayerState> playerStates) {
+        this.playerStates = playerStates;
     }
 }

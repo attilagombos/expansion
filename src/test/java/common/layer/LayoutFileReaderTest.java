@@ -1,6 +1,6 @@
 package common.layer;
 
-import static common.model.region.RegionType.BASE_3;
+import static common.model.region.RegionType.BASE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -23,13 +23,13 @@ class LayoutFileReaderTest {
     @Test
     void shouldReadLayout() {
         // When
-        Board result = underTest.read("src/test/resources/layout1.csv");
+        Board result = underTest.read("src/test/resources/layouts/layout1.csv");
 
         // Then
         assertEquals(1024, result.getRegionCount());
 
         Region region = result.getRegion(new Location(3, 3));
         assertNotNull(region);
-        assertEquals(BASE_3, region.getType());
+        assertEquals(BASE, region.getType());
     }
 }
