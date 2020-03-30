@@ -2,6 +2,8 @@ package client.strategy;
 
 import static common.model.StepType.DEPLOY;
 import static common.model.StepType.MOVE;
+import static common.model.region.RegionType.BASE;
+import static common.model.region.RegionType.MINE;
 import static common.model.region.RegionType.WALL;
 import static java.lang.Math.abs;
 import static java.util.Comparator.comparingInt;
@@ -91,6 +93,33 @@ public class BaseStrategy implements IStrategy {
 
         for (Node<Region> border : borderNodes) {
             int forces = border.getValue().getForces() - 1;
+
+            for (Node<Region> adjacent : border.getAdjacency()) {
+                if (forces > 0) {
+                    if (adjacent.getValue().getColor() != border.getValue().getColor()
+                            && adjacent.isNotVisited()
+                            && (adjacent.getValue().getType() == BASE || adjacent.getValue().getType() == MINE)) {
+                        adjacent.setVisited();
+                        instruction.addStep(new Step(MOVE, border.getValue().getLocation(), adjacent.getValue().getLocation(), 1));
+                        forces--;
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            for (Node<Region> adjacent : border.getAdjacency()) {
+                if (forces > 0) {
+                    if (adjacent.getValue().getColor() != border.getValue().getColor() && adjacent.isNotVisited()) {
+                        adjacent.setVisited();
+                        instruction.addStep(new Step(MOVE, border.getValue().getLocation(), adjacent.getValue().getLocation(), 1));
+                        forces--;
+                    }
+                } else {
+                    break;
+                }
+            }
+
             while (forces > 0) {
                 for (Node<Region> adjacent : border.getAdjacency()) {
                     if (forces > 0) {

@@ -1,5 +1,8 @@
 package server.service;
 
+import static common.model.region.RegionType.BASE;
+import static common.model.region.RegionType.LAND;
+import static common.model.region.RegionType.MINE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.shuffle;
 import static java.util.Collections.singletonList;
@@ -78,16 +81,6 @@ public class PlayerService {
         return playerMapping.get(session);
     }
 
-    public List<PlayerState> getPlayerStates() {
-        List<PlayerState> playerStates = new ArrayList<>();
-
-        playerMapping.values().forEach(player -> {
-            playerStates.add(new PlayerState(player.getColor(), player.getBase().getLocation(), player.getReinforcements()));
-        });
-
-        return playerStates;
-    }
-
     public List<PlayerState> broadcast(Board board, boolean isInitialStatus) {
         List<PlayerState> playerStates = new ArrayList<>();
 
@@ -99,7 +92,15 @@ public class PlayerService {
 
         playerMapping.forEach((session, player) -> {
             if (session.isOpen()) {
-                PlayerState playerState = new PlayerState(player.getColor(), player.getBase().getLocation(), player.getReinforcements());
+                PlayerState playerState = new PlayerState();
+                playerState.setName(player.getName());
+                playerState.setColor(player.getColor());
+                playerState.setBase(player.getBase().getLocation());
+                playerState.setTerritory(player.getTerritory().size());
+                playerState.setBases((int) player.getTerritory().stream().filter(region -> region.getType() == BASE).count());
+                playerState.setMines((int) player.getTerritory().stream().filter(region -> region.getType() == MINE).count());
+                playerState.setLands((int) player.getTerritory().stream().filter(region -> region.getType() == LAND).count());
+                playerState.setReinforcements(player.getReinforcements());
 
                 playerStates.add(playerState);
 

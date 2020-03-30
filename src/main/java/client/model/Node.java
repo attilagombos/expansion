@@ -23,6 +23,18 @@ public class Node<T> {
         return adjacency;
     }
 
+    public boolean isNotVisited() {
+        return !isVisited();
+    }
+
+    public void setVisited() {
+        this.visited = true;
+    }
+
+    public void clearVisited() {
+        this.visited = false;
+    }
+
     public boolean isVisited() {
         return visited;
     }

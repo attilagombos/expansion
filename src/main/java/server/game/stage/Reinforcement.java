@@ -12,11 +12,11 @@ import server.service.PlayerService;
 
 public class Reinforcement {
 
-    private static final double BASE_MULTIPLIER = 8.0;
+    private static final double BASE_MULTIPLIER = 16.0;
 
-    private static final double MINE_MULTIPLIER = 2.0;
+    private static final double MINE_MULTIPLIER = 4.0;
 
-    private static final double LAND_MULTIPLIER = 1.0/16.0;
+    private static final double LAND_MULTIPLIER = 1.0/8.0;
 
     public static void reinforce(PlayerService playerService) {
         for (Player player : playerService.getPlayerMapping()) {
