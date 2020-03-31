@@ -7,7 +7,7 @@ function connect() {
         var gameState = JSON.parse(message.data);
         var boardState = gameState.boardState;
 
-        $("#container").html(boardState.layout + boardState.colors + boardState.forces);
+        $("#container").html(boardState.colors + boardState.layout + boardState.forces);
     }
 }
 
