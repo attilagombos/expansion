@@ -2,6 +2,7 @@ package common.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class GameState implements Serializable {
 
@@ -12,6 +13,8 @@ public class GameState implements Serializable {
     private BoardState boardState = new BoardState();
 
     private List<PlayerState> playerStates;
+
+    private Map<Color, Instruction> instructions;
 
     public GameState() {
     }
@@ -46,5 +49,13 @@ public class GameState implements Serializable {
 
     public void setPlayerStates(List<PlayerState> playerStates) {
         this.playerStates = playerStates;
+    }
+
+    public Map<Color, Instruction> getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(Map<Color, Instruction> instructions) {
+        this.instructions = instructions;
     }
 }

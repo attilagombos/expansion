@@ -86,8 +86,10 @@ public class PlayerEndpoint {
 
         LOG.info("My name: {} color: {} base: {} round: {}",
                 playerState.getName(), playerState.getColor(), playerState.getBase().getCoordinates(), gameState.getRounds());
-        LOG.info("My bases: {} mines: {} lands: {} forces: {} reinforcements: {}",
-                playerState.getBases(), playerState.getMines(), playerState.getLands(), playerState.getForces(), playerState.getReinforcements());
+        LOG.info("My territory size: {} bases: {} mines: {} lands: {}",
+                playerState.getTerritory(), playerState.getBases(), playerState.getMines(), playerState.getLands());
+        LOG.info("My total forces: {} available forces: {} reinforcements: {}",
+                playerState.getForces(), playerState.getForces() - playerState.getTerritory(), playerState.getReinforcements());
 
         if (gameState.getRunning()) {
             session.getBasicRemote().sendObject(strategy.getInstruction(gameState));

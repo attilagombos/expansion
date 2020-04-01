@@ -79,6 +79,21 @@ public class BaseStrategy implements IStrategy {
 
         int reinforcements = playerState.getReinforcements();
 
+        for (Node<Region> border : borderNodes) {
+            for (Node<Region> adjacent : border.getAdjacency()) {
+                if (reinforcements > 0) {
+                    if (adjacent.getValue().getColor() != border.getValue().getColor()
+                            && (adjacent.getValue().getType() == BASE || adjacent.getValue().getType() == MINE)) {
+                        instruction.addStep(new Step(DEPLOY, null, border.getValue().getLocation(), 1));
+                        border.getValue().setForces(border.getValue().getForces() + 1);
+                        reinforcements--;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
         while (reinforcements > 0) {
             for (Node<Region> border : borderNodes) {
                 if (reinforcements > 0) {

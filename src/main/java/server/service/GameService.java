@@ -1,6 +1,7 @@
 package server.service;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.shuffle;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
@@ -56,7 +57,7 @@ public class GameService {
     public void initialize() {
         board = layoutFileReader.read(gameConfiguration.getLayoutPath());
 
-        webService.broadcast(board, emptyList());
+        webService.broadcast(board, emptyList(), emptyMap());
     }
 
     public void playerConnected(Player player) {
@@ -76,7 +77,7 @@ public class GameService {
             if (playerService.getPlayerCount() == gameConfiguration.getPlayerLimit()) {
                 startGame();
             } else {
-                webService.broadcast(board, emptyList());
+                webService.broadcast(board, playerService.getPlayerStates(), emptyMap());
             }
         } else {
             LOG.error("Not enough bases for players");
@@ -103,7 +104,7 @@ public class GameService {
         List<PlayerState> playerStates = playerService.broadcast(board, isInitialStatus);
 
         if (webService.hasSession()) {
-            webService.broadcast(board, playerStates);
+            webService.broadcast(board, playerStates, instructionService.getInstructionCache());
         }
     }
 }

@@ -9,18 +9,37 @@ body {
     margin-left: auto;
     margin-right: auto;
     display: grid;
+    grid-gap: 25px;
     grid-template-columns: min-content auto;
     justify-content: center;
-    align-items: center;
+    align-items: top;
 }
 
-table {
+.layout, .colors, .forces {
     border-collapse: collapse;
     border: 1px solid rgba(0, 0, 0, 1);
     table-layout: fixed;
     grid-column: 1;
     grid-row: 1;
     align: center;
+}
+
+.players {
+    border-collapse: collapse;
+    border: 1px solid rgba(0, 0, 0, 1);
+    table-layout: fixed;
+    grid-column: 2;
+    grid-row: 1;
+    align: center;
+}
+
+th, td.name, td.territory, td.bases, td.mines, td.lands, td.forces, td.active, td.reinforcements {
+    max-width: 200px;
+    font-size: 0.75vw;
+    white-space: nowrap;
+    padding: 0 5px 0 5px;
+    border: 1px solid rgba(64, 64, 64, 1);
+    text-align: center;
 }
 
 td {

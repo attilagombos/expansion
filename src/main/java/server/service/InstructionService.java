@@ -6,6 +6,7 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,5 +54,9 @@ public class InstructionService {
 
     public boolean hasInstructions() {
         return isNotEmpty(instructionCache);
+    }
+
+    public Map<Color, Instruction> getInstructionCache() {
+        return new HashMap<>(instructionCache);
     }
 }

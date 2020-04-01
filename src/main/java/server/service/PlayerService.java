@@ -6,6 +6,7 @@ import static common.model.region.RegionType.MINE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.shuffle;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -84,6 +85,12 @@ public class PlayerService {
         return playerMapping.get(session);
     }
 
+    public List<PlayerState> getPlayerStates() {
+        return playerMapping.values().stream()
+                .map(this::getPlayerState)
+                .collect(toList());
+    }
+
     public List<PlayerState> broadcast(Board board, boolean isInitialStatus) {
         List<PlayerState> playerStates = new ArrayList<>();
 
@@ -95,16 +102,7 @@ public class PlayerService {
 
         playerMapping.forEach((session, player) -> {
             if (session.isOpen()) {
-                PlayerState playerState = new PlayerState();
-                playerState.setName(player.getName());
-                playerState.setColor(player.getColor());
-                playerState.setBase(player.getBase().getLocation());
-                playerState.setTerritory(player.getTerritory().size());
-                playerState.setBases((int) player.getTerritory().stream().filter(region -> region.getType() == BASE).count());
-                playerState.setMines((int) player.getTerritory().stream().filter(region -> region.getType() == MINE).count());
-                playerState.setLands((int) player.getTerritory().stream().filter(region -> region.getType() == LAND).count());
-                playerState.setForces(player.getTerritory().stream().mapToInt(Region::getForces).sum());
-                playerState.setReinforcements(player.getReinforcements());
+                PlayerState playerState = getPlayerState(player);
 
                 playerStates.add(playerState);
 
@@ -138,5 +136,21 @@ public class PlayerService {
 
         availableColors.clear();
         availableColors.addAll(asList(Color.values()));
+    }
+
+    private PlayerState getPlayerState(Player player) {
+        PlayerState playerState = new PlayerState();
+
+        playerState.setName(player.getName());
+        playerState.setColor(player.getColor());
+        playerState.setBase(player.getBase().getLocation());
+        playerState.setTerritory(player.getTerritory().size());
+        playerState.setBases((int) player.getTerritory().stream().filter(region -> region.getType() == BASE).count());
+        playerState.setMines((int) player.getTerritory().stream().filter(region -> region.getType() == MINE).count());
+        playerState.setLands((int) player.getTerritory().stream().filter(region -> region.getType() == LAND).count());
+        playerState.setForces(player.getTerritory().stream().mapToInt(Region::getForces).sum());
+        playerState.setReinforcements(player.getReinforcements());
+
+        return playerState;
     }
 }

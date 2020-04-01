@@ -3,6 +3,7 @@ package server.service;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.websocket.EncodeException;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Service;
 import common.layer.ILayerWriter;
 import common.model.Board;
 import common.model.BoardState;
+import common.model.Color;
 import common.model.GameState;
+import common.model.Instruction;
 import common.model.PlayerState;
 
 @Service
@@ -50,7 +53,7 @@ public class WebService {
         return !sessions.isEmpty();
     }
 
-    public void broadcast(Board board, List<PlayerState> playerStates) {
+    public void broadcast(Board board, List<PlayerState> playerStates, Map<Color, Instruction> instructions) {
         BoardState boardState = new BoardState(layerWriter.writeLayout(board), layerWriter.writeColors(board), layerWriter.writeForces(board));
 
         GameState gameState = new GameState();
@@ -58,6 +61,7 @@ public class WebService {
         gameState.setRounds(board.getLoopCounter());
         gameState.setBoardState(boardState);
         gameState.setPlayerStates(playerStates);
+        gameState.setInstructions(instructions);
 
         for (Session session : sessions) {
             sendBoardState(session, gameState);
