@@ -102,7 +102,7 @@ public class HtmlLayerWriter implements ILayerWriter {
                 Location location = new Location(locationX, locationY);
                 Region region = board.getRegion(location);
 
-                String forces =  region.getForces() > 0 ? valueOf(region.getForces()) : EMPTY;
+                String forces =  region.getForces() > 1 ? valueOf(region.getForces() - 1) : EMPTY;
 
                 row.add(format(TABLE_DATA_FORMAT, EMPTY, forces));
             }

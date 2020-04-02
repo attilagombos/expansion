@@ -90,7 +90,7 @@ public class GameService {
 
     private void startGame() {
         if (!isGameRunning()) {
-            game = new Game(this, playerService, instructionService, board, gameConfiguration.getLoopPeriodMillis());
+            game = new Game(gameConfiguration, this, playerService, instructionService, board, gameConfiguration.getLoopPeriodMillis());
 
             ExecutorService executor = Executors.newFixedThreadPool(10);
 

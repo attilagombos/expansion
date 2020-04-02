@@ -1,6 +1,10 @@
 package server.game.stage;
 
+import static common.model.region.RegionType.BASE;
+import static common.model.region.RegionType.MINE;
 import static java.lang.Integer.min;
+import static server.game.stage.Reinforcement.BASE_MULTIPLIER;
+import static server.game.stage.Reinforcement.MINE_MULTIPLIER;
 
 import java.util.List;
 
@@ -18,15 +22,15 @@ public class Deployment {
 
     private static final Logger LOG = LoggerFactory.getLogger(Deployment.class);
 
-    public static void deploy(Board board, PlayerService playerService, InstructionService instructionService) {
+    public static void deploy(Board board, PlayerService playerService, InstructionService instructionService, boolean inPlaceDeploy) {
         for (Player player : playerService.getPlayerMapping()) {
             List<Step> deployments = instructionService.getDeployments(player.getColor());
 
-            deployForPlayer(board, player, deployments);
+            deployForPlayer(board, player, deployments, inPlaceDeploy);
         }
     }
 
-    private static void deployForPlayer(Board board, Player player, List<Step> deployments) {
+    private static void deployForPlayer(Board board, Player player, List<Step> deployments, boolean inPlaceDeploy) {
         int reinforcements = player.getReinforcements();
 
         for (Step deployment : deployments) {
@@ -54,6 +58,16 @@ public class Deployment {
         }
 
         player.setReinforcements(reinforcements);
+
+        if (inPlaceDeploy) {
+            for (Region region : player.getTerritory()) {
+                if (region.getType() == BASE) {
+                    region.setForces(region.getForces() + (int) BASE_MULTIPLIER);
+                } else if (region.getType() == MINE) {
+                    region.setForces(region.getForces() + (int) MINE_MULTIPLIER);
+                }
+            }
+        }
     }
 
     private static boolean isInvalidDeployment(Step deployment, Region target) {

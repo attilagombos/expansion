@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import common.model.Board;
 import common.model.Color;
+import server.configuration.GameConfiguration;
 import server.service.GameService;
 import server.service.InstructionService;
 import server.service.PlayerService;
@@ -21,6 +22,8 @@ import server.service.PlayerService;
 public class Game implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Game.class);
+
+    private final GameConfiguration gameConfiguration;
 
     private final GameService gameService;
 
@@ -34,7 +37,9 @@ public class Game implements Runnable {
 
     private boolean isRunning;
 
-    public Game(GameService gameService, PlayerService playerService, InstructionService instructionService, Board board, long loopPeriodMillis) {
+    public Game(GameConfiguration gameConfiguration, GameService gameService, PlayerService playerService,
+            InstructionService instructionService, Board board, long loopPeriodMillis) {
+        this.gameConfiguration = gameConfiguration;
         this.gameService = gameService;
         this.playerService = playerService;
         this.instructionService = instructionService;
@@ -90,6 +95,8 @@ public class Game implements Runnable {
         playerService.closeSessions();
 
         board.clean();
+
+        instructionService.clearInstructions();
     }
 
     private void processLoop() {
@@ -98,7 +105,7 @@ public class Game implements Runnable {
 
             if (instructionService.hasInstructions()) {
 
-                deploy(board, playerService, instructionService);
+                deploy(board, playerService, instructionService, gameConfiguration.isInPlaceDeploy());
 
                 move(board, playerService, instructionService);
 
@@ -109,7 +116,7 @@ public class Game implements Runnable {
 
             updatePlayers();
 
-            reinforce(playerService);
+            reinforce(playerService, gameConfiguration.isInPlaceDeploy());
 
             board.setActive(isRunning);
 

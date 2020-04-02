@@ -10,30 +10,35 @@ body {
     margin-right: auto;
     display: grid;
     grid-gap: 25px;
-    grid-template-columns: min-content auto;
+    grid-template-columns: min-content min-content;
     justify-content: center;
     align-items: top;
-}
-
-.layout, .colors, .forces {
-    border-collapse: collapse;
-    border: 1px solid rgba(0, 0, 0, 1);
-    table-layout: fixed;
-    grid-column: 1;
-    grid-row: 1;
-    align: center;
 }
 
 .players {
     border-collapse: collapse;
     border: 1px solid rgba(0, 0, 0, 1);
     table-layout: fixed;
-    grid-column: 2;
     grid-row: 1;
+    grid-column: 1;
     align: center;
 }
 
-th, td.name, td.territory, td.bases, td.mines, td.lands, td.forces, td.active, td.reinforcements {
+table.forces {
+    z-index: 1;
+}
+
+table.layout, table.colors, table.forces {
+    border-collapse: collapse;
+    border: 1px solid rgba(0, 0, 0, 1);
+    table-layout: fixed;
+    grid-row: 1;
+    grid-column: 2;
+    align: center;
+}
+
+th, td.name, td.territory, td.bases, td.mines, td.lands, td.forces, td.active, td.reinforcements,
+td.type, td.source, td.target {
     max-width: 200px;
     font-size: 0.75vw;
     white-space: nowrap;
