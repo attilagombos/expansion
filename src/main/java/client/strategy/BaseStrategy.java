@@ -5,8 +5,10 @@ import static common.model.StepType.MOVE;
 import static common.model.region.RegionType.BASE;
 import static common.model.region.RegionType.MINE;
 import static common.model.region.RegionType.WALL;
+import static java.lang.Integer.max;
 import static java.lang.Math.abs;
 import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -70,23 +72,33 @@ public class BaseStrategy implements IStrategy {
         innerNodes.removeAll(borderNodes);
 
         for (Node<Region> inner : innerNodes) {
-            if (inner.getValue().getForces() > 1) {
-                Node<Region> closestBorder = getClosest(inner, borderNodes);
-                Node<Region> closestAdjacent = getClosestAdjacent(inner, closestBorder);
-                instruction.addStep(new Step(MOVE, inner.getValue().getLocation(), closestAdjacent.getValue().getLocation(), inner.getValue().getForces() - 1));
+            int forcesToMove = inner.getValue().getForces() - 1;
+
+            while (forcesToMove > 0) {
+                Set<Node<Region>> closestBorders = getClosestNodes(inner, borderNodes);
+
+                for (Node<Region> border : closestBorders) {
+                    if (forcesToMove > 0) {
+                        Node<Region> closestAdjacent = getClosestAdjacent(inner, border);
+                        instruction.addStep(new Step(MOVE, inner.getValue().getLocation(), closestAdjacent.getValue().getLocation(), 1));
+                        forcesToMove--;
+                    } else {
+                        break;
+                    }
+                }
             }
         }
 
-        int reinforcements = playerState.getReinforcements();
+        int forcesToDeploy = playerState.getReinforcements();
 
         for (Node<Region> border : borderNodes) {
             for (Node<Region> adjacent : border.getAdjacency()) {
-                if (reinforcements > 0) {
+                if (forcesToDeploy > 0) {
                     if (adjacent.getValue().getColor() != border.getValue().getColor()
                             && (adjacent.getValue().getType() == BASE || adjacent.getValue().getType() == MINE)) {
                         instruction.addStep(new Step(DEPLOY, null, border.getValue().getLocation(), 1));
                         border.getValue().setForces(border.getValue().getForces() + 1);
-                        reinforcements--;
+                        forcesToDeploy--;
                     }
                 } else {
                     break;
@@ -94,12 +106,12 @@ public class BaseStrategy implements IStrategy {
             }
         }
 
-        while (reinforcements > 0) {
+        while (forcesToDeploy > 0) {
             for (Node<Region> border : borderNodes) {
-                if (reinforcements > 0) {
+                if (forcesToDeploy > 0) {
                     instruction.addStep(new Step(DEPLOY, null, border.getValue().getLocation(), 1));
                     border.getValue().setForces(border.getValue().getForces() + 1);
-                    reinforcements--;
+                    forcesToDeploy--;
                 } else {
                     break;
                 }
@@ -107,16 +119,19 @@ public class BaseStrategy implements IStrategy {
         }
 
         for (Node<Region> border : borderNodes) {
-            int forces = border.getValue().getForces() - 1;
+            boolean isEnemyAdjacent = border.getAdjacency().stream()
+                    .anyMatch(adjacent -> adjacent.getValue().getColor() != null && adjacent.getValue().getColor() != border.getValue().getColor());
+
+            int forcesToMove = isEnemyAdjacent ? (border.getValue().getForces() - 1) / 2 : border.getValue().getForces() - 1;
 
             for (Node<Region> adjacent : border.getAdjacency()) {
-                if (forces > 0) {
+                if (forcesToMove > 0) {
                     if (adjacent.getValue().getColor() != border.getValue().getColor()
                             && adjacent.isNotVisited()
                             && (adjacent.getValue().getType() == BASE || adjacent.getValue().getType() == MINE)) {
                         adjacent.setVisited();
                         instruction.addStep(new Step(MOVE, border.getValue().getLocation(), adjacent.getValue().getLocation(), 1));
-                        forces--;
+                        forcesToMove--;
                     }
                 } else {
                     break;
@@ -124,35 +139,23 @@ public class BaseStrategy implements IStrategy {
             }
 
             for (Node<Region> adjacent : border.getAdjacency()) {
-                if (forces > 0) {
-                    if (adjacent.getValue().getColor() != border.getValue().getColor() && adjacent.isNotVisited()) {
-                        adjacent.setVisited();
-                        instruction.addStep(new Step(MOVE, border.getValue().getLocation(), adjacent.getValue().getLocation(), 1));
-                        forces--;
-                    }
-                } else {
-                    break;
-                }
-            }
-
-            for (Node<Region> adjacent : border.getAdjacency()) {
-                if (forces > 0) {
+                if (forcesToMove > 0) {
                     if (adjacent.getValue().getColor() == null && adjacent.isNotVisited()) {
                         adjacent.setVisited();
                         instruction.addStep(new Step(MOVE, border.getValue().getLocation(), adjacent.getValue().getLocation(), 1));
-                        forces--;
+                        forcesToMove--;
                     }
                 } else {
                     break;
                 }
             }
 
-            while (forces > 0) {
+            while (forcesToMove > 0) {
                 for (Node<Region> adjacent : border.getAdjacency()) {
-                    if (forces > 0) {
+                    if (forcesToMove > 0) {
                         if (adjacent.getValue().getColor() != border.getValue().getColor()) {
                             instruction.addStep(new Step(MOVE, border.getValue().getLocation(), adjacent.getValue().getLocation(), 1));
-                            forces--;
+                            forcesToMove--;
                         }
                     } else {
                         break;
@@ -199,6 +202,11 @@ public class BaseStrategy implements IStrategy {
         return nodes.stream().min(comparingInt(node -> getDistance(node, source))).orElse(source);
     }
 
+    private Set<Node<Region>> getClosestNodes(Node<Region> source, Set<Node<Region>> nodes) {
+        int minimumDistance = nodes.stream().mapToInt(node -> getDistance(node, source)).min().orElse(0);
+        return nodes.stream().filter(node -> getDistance(node, source) == minimumDistance).collect(toSet());
+    }
+
     private Node<Region> getClosestAdjacent(Node<Region> source, Node<Region> target) {
         return source.getAdjacency().stream().min(comparingInt(adjacent -> getDistance(adjacent, target))).orElse(source);
     }
@@ -207,6 +215,6 @@ public class BaseStrategy implements IStrategy {
         Location location1 = node1.getValue().getLocation();
         Location location2 = node2.getValue().getLocation();
 
-        return abs(location1.getX() - location2.getX()) + abs(location1.getY() - location2.getY());
+        return max(abs(location1.getX() - location2.getX()), abs(location1.getY() - location2.getY()));
     }
 }
