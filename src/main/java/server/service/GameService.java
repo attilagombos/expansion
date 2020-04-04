@@ -1,9 +1,8 @@
 package server.service;
 
+import static java.lang.Math.min;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.shuffle;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -61,26 +60,20 @@ public class GameService {
     }
 
     public void playerConnected(Player player) {
-        List<Region> bases = board.getBases();
+        Region baseForPlayer = board.getBases().stream().filter(base -> base.getColor() == null).findAny().orElse(null);
 
-        if (isNotEmpty(bases)) {
-            shuffle(bases);
+        if (baseForPlayer != null) {
+            baseForPlayer.setColor(player.getColor());
+            baseForPlayer.setForces(1);
 
-            Region base = bases.get(0);
+            player.setBase(baseForPlayer);
+            player.getTerritory().add(baseForPlayer);
 
-            base.setColor(player.getColor());
-            base.setForces(1);
-
-            player.setBase(base);
-            player.getTerritory().add(base);
-
-            if (playerService.getPlayerCount() == gameConfiguration.getPlayerLimit()) {
+            if (playerService.getPlayerCount() == min(gameConfiguration.getPlayerLimit(), board.getBases().size())) {
                 startGame();
             } else {
                 webService.broadcast(board, playerService.getPlayerStates(), emptyMap());
             }
-        } else {
-            LOG.error("Not enough bases for players");
         }
     }
 

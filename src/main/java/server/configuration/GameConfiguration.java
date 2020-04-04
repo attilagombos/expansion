@@ -1,58 +1,45 @@
 package server.configuration;
 
-import static java.lang.Boolean.TRUE;
+import static java.lang.Boolean.FALSE;
 import static java.util.Optional.ofNullable;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
-@Service
+@Configuration
 public class GameConfiguration {
 
+    private static final String LAYOUT_PATH_PROPERTY = "game.layout.path";
+    private static final String PLAYER_LIMIT_PROPERTY = "game.player.limit";
+    private static final String LOOP_PERIOD_PROPERTY = "game.loop.period";
+    private static final String AUTO_DEPLOY_PROPERTY = "game.auto.deploy";
+
     private static final String DEFAULT_LAYOUT_PATH = "src/main/resources/layouts/layout1.csv";
-
     private static final int DEFAULT_PLAYER_LIMIT = 4;
+    private static final long DEFAULT_LOOP_PERIOD = 1000L;
+    private static final boolean DEFAULT_AUTO_DEPLOY = FALSE;
 
-    private static final long DEFAULT_LOOP_PERIOD_MILLIS = 1000L;
+    private final Environment environment;
 
-    private static final boolean DEFAULT_IN_PLACE_DEPLOY = TRUE;
-
-    private String layoutPath;
-
-    private Integer playerLimit;
-
-    private Long loopPeriodMillis;
-
-    private Boolean inPlaceDeploy;
+    @Autowired
+    public GameConfiguration(Environment environment) {
+        this.environment = environment;
+    }
 
     public String getLayoutPath() {
-        return ofNullable(layoutPath).orElse(DEFAULT_LAYOUT_PATH);
+        return ofNullable(environment.getProperty(LAYOUT_PATH_PROPERTY)).orElse(DEFAULT_LAYOUT_PATH);
     }
 
-    public void setLayoutPath(String layoutPath) {
-        this.layoutPath = layoutPath;
+    public int getPlayerLimit() {
+        return ofNullable(environment.getProperty(PLAYER_LIMIT_PROPERTY, Integer.class)).orElse(DEFAULT_PLAYER_LIMIT);
     }
 
-    public Integer getPlayerLimit() {
-        return ofNullable(playerLimit).orElse(DEFAULT_PLAYER_LIMIT);
+    public long getLoopPeriodMillis() {
+        return ofNullable(environment.getProperty(LOOP_PERIOD_PROPERTY, Long.class)).orElse(DEFAULT_LOOP_PERIOD);
     }
 
-    public void setPlayerLimit(Integer playerLimit) {
-        this.playerLimit = playerLimit;
-    }
-
-    public Long getLoopPeriodMillis() {
-        return ofNullable(loopPeriodMillis).orElse(DEFAULT_LOOP_PERIOD_MILLIS);
-    }
-
-    public void setLoopPeriodMillis(Long loopPeriodMillis) {
-        this.loopPeriodMillis = loopPeriodMillis;
-    }
-
-    public boolean isInPlaceDeploy() {
-        return ofNullable(inPlaceDeploy).orElse(DEFAULT_IN_PLACE_DEPLOY);
-    }
-
-    public void setInPlaceDeploy(Boolean inPlaceDeploy) {
-        this.inPlaceDeploy = inPlaceDeploy;
+    public boolean isAutoDeploy() {
+        return ofNullable(environment.getProperty(AUTO_DEPLOY_PROPERTY, Boolean.class)).orElse(DEFAULT_AUTO_DEPLOY);
     }
 }

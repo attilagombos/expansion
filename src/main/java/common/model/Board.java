@@ -74,7 +74,6 @@ public class Board {
         return regions.values()
                 .stream()
                 .filter(region -> region.getType() == BASE)
-                .filter(region -> region.getColor() == null)
                 .collect(toList());
     }
 

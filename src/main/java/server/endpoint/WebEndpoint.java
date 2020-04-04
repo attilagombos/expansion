@@ -1,5 +1,7 @@
 package server.endpoint;
 
+import static common.configuration.EndpointConfiguration.WEB_ENDPOINT_PATH;
+
 import javax.websocket.CloseReason;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -18,7 +20,7 @@ import server.service.WebService;
 
 @Component
 @ServerEndpoint(
-        value= "/expansion/web",
+        value= WEB_ENDPOINT_PATH,
         configurator = ServerEndpointConfigurator.class,
         encoders = GameStateEncoder.class)
 public class WebEndpoint {

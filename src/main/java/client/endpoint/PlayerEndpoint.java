@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import client.configuration.ClientConfiguration;
 import client.configuration.ClientEndpointConfigurator;
-import client.configuration.PlayerConfiguration;
 import client.strategy.IStrategy;
 import common.decoder.GameStateDecoder;
 import common.encoder.InstructionEncoder;
@@ -42,23 +41,20 @@ public class PlayerEndpoint {
 
     private final ClientConfiguration clientConfiguration;
 
-    private final PlayerConfiguration playerConfiguration;
-
     private final IStrategy strategy;
 
     private CountDownLatch latch;
 
     @Autowired
-    public PlayerEndpoint(ClientConfiguration clientConfiguration, PlayerConfiguration playerConfiguration, IStrategy strategy) {
+    public PlayerEndpoint(ClientConfiguration clientConfiguration, IStrategy strategy) {
         this.clientConfiguration = clientConfiguration;
-        this.playerConfiguration = playerConfiguration;
         this.strategy = strategy;
     }
 
     @PostConstruct
     private void connect() {
         try {
-            URI serverUri = new URI(clientConfiguration.getWebSocketServerUri() + "/" + playerConfiguration.getPlayerName());
+            URI serverUri = new URI(clientConfiguration.getWebSocketServerUri());
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.setDefaultMaxTextMessageBufferSize(1024 * 1024);

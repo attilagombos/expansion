@@ -37,6 +37,8 @@ public class Game implements Runnable {
 
     private boolean isRunning;
 
+    private boolean isAutoDeploy;
+
     public Game(GameConfiguration gameConfiguration, GameService gameService, PlayerService playerService,
             InstructionService instructionService, Board board, long loopPeriodMillis) {
         this.gameConfiguration = gameConfiguration;
@@ -54,6 +56,8 @@ public class Game implements Runnable {
     @Override
     public void run() {
         isRunning = true;
+
+        isAutoDeploy = gameConfiguration.isAutoDeploy();
 
         LOG.info("Game started");
 
@@ -105,7 +109,7 @@ public class Game implements Runnable {
 
             if (instructionService.hasInstructions()) {
 
-                deploy(board, playerService, instructionService, gameConfiguration.isInPlaceDeploy());
+                deploy(board, playerService, instructionService, isAutoDeploy);
 
                 move(board, playerService, instructionService);
 
@@ -116,7 +120,7 @@ public class Game implements Runnable {
 
             updatePlayers();
 
-            reinforce(playerService, gameConfiguration.isInPlaceDeploy());
+            reinforce(playerService, isAutoDeploy);
 
             board.setActive(isRunning);
 

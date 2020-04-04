@@ -1,49 +1,46 @@
 package client.configuration;
 
+import static common.configuration.EndpointConfiguration.GAME_ENDPOINT_CLIENT_PATH;
+import static java.lang.String.format;
+import static java.lang.management.ManagementFactory.getRuntimeMXBean;
 import static java.util.Optional.ofNullable;
 
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
-@Component
+@Configuration
 public class ClientConfiguration {
 
-    private static final String DEFAULT_SERVER_HOST = "localhost";
+    private static final String SERVER_HOST_PROPERTY = "server.host";
+    private static final String SERVER_PORT_PROPERTY = "server.port";
+    private static final String PLAYER_NAME_PROPERTY = "player.name";
 
+    private static final String DEFAULT_SERVER_HOST = "localhost";
     private static final int DEFAULT_SERVER_PORT = 8080;
 
-    private static final String DEFAULT_GAME_PATH = "expansion/game";
+    private static final String WEB_SOCKET_SERVER_URI_FORMAT = "ws://%s:%d/%s%s";
 
-    private String serverHost;
+    private final Environment environment;
 
-    private Integer serverPort;
-
-    private String gamePath;
+    @Autowired
+    public ClientConfiguration(Environment environment) {
+        this.environment = environment;
+    }
 
     public String getWebSocketServerUri() {
-        return String.format("ws://%s:%d/%s", getServerHost(), getServerPort(), getGamePath());
+        return format(WEB_SOCKET_SERVER_URI_FORMAT, getServerHost(), getServerPort(), GAME_ENDPOINT_CLIENT_PATH, getPlayerName());
     }
 
     public String getServerHost() {
-        return ofNullable(serverHost).orElse(DEFAULT_SERVER_HOST);
-    }
-
-    public void setServerHost(String serverHost) {
-        this.serverHost = serverHost;
+        return ofNullable(environment.getProperty(SERVER_HOST_PROPERTY)).orElse(DEFAULT_SERVER_HOST);
     }
 
     public Integer getServerPort() {
-        return ofNullable(serverPort).orElse(DEFAULT_SERVER_PORT);
+        return ofNullable(environment.getProperty(SERVER_PORT_PROPERTY, Integer.class)).orElse(DEFAULT_SERVER_PORT);
     }
 
-    public void setServerPort(Integer serverPort) {
-        this.serverPort = serverPort;
-    }
-
-    public String getGamePath() {
-        return ofNullable(gamePath).orElse(DEFAULT_GAME_PATH);
-    }
-
-    public void setGamePath(String gamePath) {
-        this.gamePath = gamePath;
+    public String getPlayerName() {
+        return ofNullable(environment.getProperty(PLAYER_NAME_PROPERTY)).orElse(getRuntimeMXBean().getName());
     }
 }

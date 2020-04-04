@@ -18,18 +18,19 @@ public class Reinforcement {
 
     private static final double LAND_MULTIPLIER = 1.0/16.0;
 
-    public static void reinforce(PlayerService playerService, boolean inPlaceDeploy) {
+    public static void reinforce(PlayerService playerService, boolean isAutoDeploy) {
         for (Player player : playerService.getPlayerMapping()) {
             List<Region> territory = player.getTerritory();
             int reinforcements;
 
             double forcesForLands = territory.stream().filter(region -> region.getType() == LAND).count() * LAND_MULTIPLIER;
 
-            if (inPlaceDeploy) {
+            if (isAutoDeploy) {
                 reinforcements = new Double(forcesForLands).intValue();
             } else {
                 double forcesForBases = territory.stream().filter(region -> region.getType() == BASE).count() * BASE_MULTIPLIER;
                 double forcesForMines = territory.stream().filter(region -> region.getType() == MINE).count() * MINE_MULTIPLIER;
+
                 reinforcements = new Double(forcesForBases + forcesForMines + forcesForLands).intValue();
             }
 

@@ -1,5 +1,7 @@
 package server.endpoint;
 
+import static common.configuration.EndpointConfiguration.GAME_ENDPOINT_SERVER_PATH;
+
 import java.io.IOException;
 
 import javax.websocket.CloseReason;
@@ -27,7 +29,7 @@ import server.service.PlayerService;
 
 @Component
 @ServerEndpoint(
-        value= "/expansion/game/{player}",
+        value = GAME_ENDPOINT_SERVER_PATH,
         configurator = ServerEndpointConfigurator.class,
         encoders = GameStateEncoder.class,
         decoders = InstructionDecoder.class)

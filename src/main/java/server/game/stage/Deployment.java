@@ -22,15 +22,15 @@ public class Deployment {
 
     private static final Logger LOG = LoggerFactory.getLogger(Deployment.class);
 
-    public static void deploy(Board board, PlayerService playerService, InstructionService instructionService, boolean inPlaceDeploy) {
+    public static void deploy(Board board, PlayerService playerService, InstructionService instructionService, boolean isAutoDeploy) {
         for (Player player : playerService.getPlayerMapping()) {
             List<Step> deployments = instructionService.getDeployments(player.getColor());
 
-            deployForPlayer(board, player, deployments, inPlaceDeploy);
+            deployForPlayer(board, player, deployments, isAutoDeploy);
         }
     }
 
-    private static void deployForPlayer(Board board, Player player, List<Step> deployments, boolean inPlaceDeploy) {
+    private static void deployForPlayer(Board board, Player player, List<Step> deployments, boolean isAutoDeploy) {
         int reinforcements = player.getReinforcements();
 
         for (Step deployment : deployments) {
@@ -59,7 +59,7 @@ public class Deployment {
 
         player.setReinforcements(reinforcements);
 
-        if (inPlaceDeploy) {
+        if (isAutoDeploy) {
             for (Region region : player.getTerritory()) {
                 if (region.getType() == BASE) {
                     region.setForces(region.getForces() + (int) BASE_MULTIPLIER);
