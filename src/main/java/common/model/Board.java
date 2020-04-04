@@ -2,9 +2,11 @@ package common.model;
 
 import static common.model.region.RegionType.BASE;
 import static common.model.region.RegionType.WALL;
+import static java.util.Collections.shuffle;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -14,15 +16,17 @@ import common.model.region.Region;
 
 public class Board {
 
-    private boolean isActive;
-    private int loopCounter;
-
     private final MultiKeyMap<Integer, Region> regions = new MultiKeyMap<>();
 
     private Location begin;
     private Location end;
 
+    private int baseCount = 0;
     private int activeRegionsCount = 0;
+
+    private List<Region> availableBases = new CopyOnWriteArrayList<>();
+
+    private boolean isActive;
 
     public void putRegion(Region region) {
         Location location = region.getLocation();
@@ -70,15 +74,19 @@ public class Board {
         return new ImmutablePair<>(begin, end);
     }
 
-    public List<Region> getBases() {
-        return regions.values()
+    public void initialize() {
+        regions.values()
                 .stream()
                 .filter(region -> region.getType() == BASE)
-                .collect(toList());
+                .forEach(availableBases::add);
+
+        shuffle(availableBases);
+
+        baseCount = availableBases.size();
     }
 
     public void clean() {
-        loopCounter = 0;
+        isActive = false;
 
         regions.values().forEach(region -> {
             region.setColor(null);
@@ -94,11 +102,11 @@ public class Board {
         isActive = active;
     }
 
-    public int getLoopCounter() {
-        return loopCounter;
+    public List<Region> getAvailableBases() {
+        return availableBases;
     }
 
-    public void incrementLoopCounter() {
-        loopCounter++;
+    public int getBaseCount() {
+        return baseCount;
     }
 }

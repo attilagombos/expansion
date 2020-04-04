@@ -53,12 +53,12 @@ public class WebService {
         return !sessions.isEmpty();
     }
 
-    public void broadcast(Board board, List<PlayerState> playerStates, Map<Color, Instruction> instructions) {
+    public void broadcast(Board board, List<PlayerState> playerStates, int loopCount, Map<Color, Instruction> instructions) {
         BoardState boardState = new BoardState(layerWriter.writeLayout(board), layerWriter.writeColors(board), layerWriter.writeForces(board));
 
         GameState gameState = new GameState();
         gameState.setRunning(board.isActive());
-        gameState.setRounds(board.getLoopCounter());
+        gameState.setRounds(loopCount);
         gameState.setBoardState(boardState);
         gameState.setPlayerStates(playerStates);
         gameState.setInstructions(instructions);

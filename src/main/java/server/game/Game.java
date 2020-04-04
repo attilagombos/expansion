@@ -1,6 +1,7 @@
 package server.game;
 
 import static java.lang.System.currentTimeMillis;
+import static server.game.stage.Deployment.autoDeploy;
 import static server.game.stage.Deployment.deploy;
 import static server.game.stage.Engagement.engage;
 import static server.game.stage.Movement.move;
@@ -35,6 +36,8 @@ public class Game implements Runnable {
 
     private final long loopPeriodMillis;
 
+    private int loopCount = 0;
+
     private boolean isRunning;
 
     private boolean isAutoDeploy;
@@ -63,7 +66,7 @@ public class Game implements Runnable {
 
         board.setActive(isRunning);
 
-        gameService.broadcast(board, true);
+        gameService.broadcastInitial(board);
 
         while (isRunning) {
             long loopStartMillis = currentTimeMillis();
@@ -92,24 +95,28 @@ public class Game implements Runnable {
             }
         }
 
-        gameService.broadcast(board, false);
+        gameService.broadcast(board, loopCount);
 
         LOG.info("Game ended");
 
         playerService.closeSessions();
 
+        loopCount = 0;
+
         board.clean();
+
+        board.initialize();
 
         instructionService.clearInstructions();
     }
 
     private void processLoop() {
         try {
-            board.incrementLoopCounter();
+            loopCount++;
 
             if (instructionService.hasInstructions()) {
 
-                deploy(board, playerService, instructionService, isAutoDeploy);
+                deploy(board, playerService, instructionService);
 
                 move(board, playerService, instructionService);
 
@@ -122,9 +129,13 @@ public class Game implements Runnable {
 
             reinforce(playerService, isAutoDeploy);
 
+            if (isAutoDeploy) {
+                autoDeploy(playerService);
+            }
+
             board.setActive(isRunning);
 
-            gameService.broadcast(board, false);
+            gameService.broadcast(board, loopCount);
         } catch (Exception e) {
             LOG.error("Exception during game loop", e);
         }

@@ -56,11 +56,13 @@ public class GameService {
     public void initialize() {
         board = layoutFileReader.read(gameConfiguration.getLayoutPath());
 
-        webService.broadcast(board, emptyList(), emptyMap());
+        board.initialize();
+
+        webService.broadcast(board, emptyList(), 0, emptyMap());
     }
 
     public void playerConnected(Player player) {
-        Region baseForPlayer = board.getBases().stream().filter(base -> base.getColor() == null).findAny().orElse(null);
+        Region baseForPlayer = board.getAvailableBases().remove(0);
 
         if (baseForPlayer != null) {
             baseForPlayer.setColor(player.getColor());
@@ -69,10 +71,10 @@ public class GameService {
             player.setBase(baseForPlayer);
             player.getTerritory().add(baseForPlayer);
 
-            if (playerService.getPlayerCount() == min(gameConfiguration.getPlayerLimit(), board.getBases().size())) {
+            if (playerService.getPlayerCount() == min(gameConfiguration.getPlayerLimit(), board.getBaseCount())) {
                 startGame();
             } else {
-                webService.broadcast(board, playerService.getPlayerStates(), emptyMap());
+                webService.broadcast(board, playerService.getPlayerStates(), 0, emptyMap());
             }
         }
     }
@@ -93,11 +95,19 @@ public class GameService {
         }
     }
 
-    public void broadcast(Board board, boolean isInitialStatus) {
-        List<PlayerState> playerStates = playerService.broadcast(board, isInitialStatus);
+    public void broadcastInitial(Board board) {
+        List<PlayerState> playerStates = playerService.broadcast(board, 0);
 
         if (webService.hasSession()) {
-            webService.broadcast(board, playerStates, instructionService.getInstructionCache());
+            webService.broadcast(board, playerStates, 0, instructionService.getInstructionCache());
+        }
+    }
+
+    public void broadcast(Board board, int loopCount) {
+        List<PlayerState> playerStates = playerService.broadcast(board, loopCount);
+
+        if (webService.hasSession()) {
+            webService.broadcast(board, playerStates, loopCount, instructionService.getInstructionCache());
         }
     }
 }

@@ -22,15 +22,21 @@ public class Deployment {
 
     private static final Logger LOG = LoggerFactory.getLogger(Deployment.class);
 
-    public static void deploy(Board board, PlayerService playerService, InstructionService instructionService, boolean isAutoDeploy) {
+    public static void deploy(Board board, PlayerService playerService, InstructionService instructionService) {
         for (Player player : playerService.getPlayerMapping()) {
             List<Step> deployments = instructionService.getDeployments(player.getColor());
 
-            deployForPlayer(board, player, deployments, isAutoDeploy);
+            deployForPlayer(board, player, deployments);
         }
     }
 
-    private static void deployForPlayer(Board board, Player player, List<Step> deployments, boolean isAutoDeploy) {
+    public static void autoDeploy(PlayerService playerService) {
+        for (Player player : playerService.getPlayerMapping()) {
+            autoDeployForPlayer(player);
+        }
+    }
+
+    private static void deployForPlayer(Board board, Player player, List<Step> deployments) {
         int reinforcements = player.getReinforcements();
 
         for (Step deployment : deployments) {
@@ -58,14 +64,14 @@ public class Deployment {
         }
 
         player.setReinforcements(reinforcements);
+    }
 
-        if (isAutoDeploy) {
-            for (Region region : player.getTerritory()) {
-                if (region.getType() == BASE) {
-                    region.setForces(region.getForces() + (int) BASE_MULTIPLIER);
-                } else if (region.getType() == MINE) {
-                    region.setForces(region.getForces() + (int) MINE_MULTIPLIER);
-                }
+    private static void autoDeployForPlayer(Player player) {
+        for (Region region : player.getTerritory()) {
+            if (region.getType() == BASE) {
+                region.setForces(region.getForces() + (int) BASE_MULTIPLIER);
+            } else if (region.getType() == MINE) {
+                region.setForces(region.getForces() + (int) MINE_MULTIPLIER);
             }
         }
     }

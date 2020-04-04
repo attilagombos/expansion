@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EncodeException;
@@ -44,7 +45,7 @@ public class PlayerService {
 
     private final Map<Session, Player> playerMapping = new ConcurrentHashMap<>();
 
-    private final List<Color> availableColors = new ArrayList<>(asList(Color.values()));
+    private final List<Color> availableColors = new CopyOnWriteArrayList<>(asList(Color.values()));
 
     private final ILayerWriter layerWriter;
 
@@ -91,14 +92,14 @@ public class PlayerService {
                 .collect(toList());
     }
 
-    public List<PlayerState> broadcast(Board board, boolean isInitialStatus) {
+    public List<PlayerState> broadcast(Board board, int loopCount) {
         List<PlayerState> playerStates = new ArrayList<>();
 
         String layoutLayer = layerWriter.writeLayout(board);
         String colorsLayer = layerWriter.writeColors(board);
         String forcesLayer = layerWriter.writeForces(board);
 
-        BoardState boardState = isInitialStatus ? new BoardState(layoutLayer, EMPTY, EMPTY) : new BoardState(EMPTY, colorsLayer, forcesLayer);
+        BoardState boardState = loopCount == 0 ? new BoardState(layoutLayer, EMPTY, EMPTY) : new BoardState(EMPTY, colorsLayer, forcesLayer);
 
         playerMapping.forEach((session, player) -> {
             if (session.isOpen()) {
@@ -108,7 +109,7 @@ public class PlayerService {
 
                 GameState gameState = new GameState();
                 gameState.setRunning(board.isActive());
-                gameState.setRounds(board.getLoopCounter());
+                gameState.setRounds(loopCount);
                 gameState.setBoardState(boardState);
                 gameState.setPlayerStates(singletonList(playerState));
 
