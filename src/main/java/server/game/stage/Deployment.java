@@ -3,8 +3,6 @@ package server.game.stage;
 import static common.model.region.RegionType.BASE;
 import static common.model.region.RegionType.MINE;
 import static java.lang.Integer.min;
-import static server.game.stage.Reinforcement.BASE_MULTIPLIER;
-import static server.game.stage.Reinforcement.MINE_MULTIPLIER;
 
 import java.util.List;
 
@@ -14,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import common.model.Board;
 import common.model.Step;
 import common.model.region.Region;
+import server.configuration.GameConfiguration;
 import server.model.Player;
 import server.service.InstructionService;
 import server.service.PlayerService;
@@ -30,9 +29,9 @@ public class Deployment {
         }
     }
 
-    public static void autoDeploy(PlayerService playerService) {
+    public static void autoDeploy(PlayerService playerService, GameConfiguration gameConfiguration) {
         for (Player player : playerService.getPlayerMapping()) {
-            autoDeployForPlayer(player);
+            autoDeployForPlayer(player, gameConfiguration);
         }
     }
 
@@ -66,12 +65,12 @@ public class Deployment {
         player.setReinforcements(reinforcements);
     }
 
-    private static void autoDeployForPlayer(Player player) {
+    private static void autoDeployForPlayer(Player player, GameConfiguration gameConfiguration) {
         for (Region region : player.getTerritory()) {
             if (region.getType() == BASE) {
-                region.setForces(region.getForces() + (int) BASE_MULTIPLIER);
+                region.setForces(region.getForces() + (int) gameConfiguration.getBaseValue());
             } else if (region.getType() == MINE) {
-                region.setForces(region.getForces() + (int) MINE_MULTIPLIER);
+                region.setForces(region.getForces() + (int) gameConfiguration.getMineValue());
             }
         }
     }

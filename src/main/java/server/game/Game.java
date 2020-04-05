@@ -127,10 +127,10 @@ public class Game implements Runnable {
 
             updatePlayers();
 
-            reinforce(playerService, isAutoDeploy);
+            reinforce(playerService, gameConfiguration);
 
             if (isAutoDeploy) {
-                autoDeploy(playerService);
+                autoDeploy(playerService, gameConfiguration);
             }
 
             board.setActive(isRunning);
