@@ -1,6 +1,9 @@
-package common.model;
+package common.model.dto;
 
 import java.io.Serializable;
+
+import common.model.game.Color;
+import common.model.game.Location;
 
 public class PlayerState implements Serializable {
 

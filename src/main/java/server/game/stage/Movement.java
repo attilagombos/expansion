@@ -7,9 +7,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import common.model.Board;
-import common.model.Step;
-import common.model.region.Region;
+import common.model.dto.instruction.Step;
+import common.model.game.Board;
+import common.model.game.Region;
 import server.model.Player;
 import server.service.InstructionService;
 import server.service.PlayerService;

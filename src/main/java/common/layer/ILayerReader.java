@@ -1,6 +1,6 @@
 package common.layer;
 
-import common.model.Board;
+import common.model.game.Board;
 
 public interface ILayerReader {
 

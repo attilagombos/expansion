@@ -1,15 +1,15 @@
 package common.layer;
 
-import static common.model.region.RegionType.BASE;
+import static common.model.game.RegionType.BASE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import common.model.Board;
-import common.model.Location;
-import common.model.region.Region;
+import common.model.game.Board;
+import common.model.game.Location;
+import common.model.game.Region;
 
 class LayoutFileReaderTest {
 

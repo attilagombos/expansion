@@ -3,8 +3,8 @@ package server.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import common.model.Color;
-import common.model.region.Region;
+import common.model.game.Color;
+import common.model.game.Region;
 
 public class Player {
 

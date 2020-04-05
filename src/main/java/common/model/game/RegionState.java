@@ -1,6 +1,4 @@
-package common.model.region;
-
-import common.model.Color;
+package common.model.game;
 
 public class RegionState {
 

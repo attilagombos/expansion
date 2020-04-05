@@ -16,12 +16,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import common.layer.ILayerWriter;
-import common.model.Board;
-import common.model.BoardState;
-import common.model.Color;
-import common.model.GameState;
-import common.model.Instruction;
-import common.model.PlayerState;
+import common.model.dto.BoardState;
+import common.model.dto.GameState;
+import common.model.dto.PlayerState;
+import common.model.dto.instruction.Instruction;
+import common.model.game.Board;
+import common.model.game.Color;
 
 @Service
 public class WebService {

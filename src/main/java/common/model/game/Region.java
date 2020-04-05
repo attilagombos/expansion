@@ -1,10 +1,7 @@
-package common.model.region;
+package common.model.game;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import common.model.Color;
-import common.model.Location;
 
 public class Region {
 

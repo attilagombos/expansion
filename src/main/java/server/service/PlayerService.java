@@ -1,8 +1,8 @@
 package server.service;
 
-import static common.model.region.RegionType.BASE;
-import static common.model.region.RegionType.LAND;
-import static common.model.region.RegionType.MINE;
+import static common.model.game.RegionType.BASE;
+import static common.model.game.RegionType.LAND;
+import static common.model.game.RegionType.MINE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.shuffle;
 import static java.util.Collections.singletonList;
@@ -30,12 +30,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import common.layer.ILayerWriter;
-import common.model.Board;
-import common.model.BoardState;
-import common.model.Color;
-import common.model.GameState;
-import common.model.PlayerState;
-import common.model.region.Region;
+import common.model.dto.BoardState;
+import common.model.dto.GameState;
+import common.model.dto.PlayerState;
+import common.model.game.Board;
+import common.model.game.Color;
+import common.model.game.Region;
 import server.model.Player;
 
 @Service

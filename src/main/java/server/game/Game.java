@@ -13,8 +13,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import common.model.Board;
-import common.model.Color;
+import common.model.game.Board;
+import common.model.game.Color;
 import server.configuration.GameConfiguration;
 import server.service.GameService;
 import server.service.InstructionService;

@@ -6,7 +6,7 @@ import javax.websocket.EndpointConfig;
 
 import com.google.gson.Gson;
 
-import common.model.GameState;
+import common.model.dto.GameState;
 
 public class GameStateEncoder implements Encoder.Text<GameState> {
 

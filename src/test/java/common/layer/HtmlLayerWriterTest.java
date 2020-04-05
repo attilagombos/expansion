@@ -1,11 +1,11 @@
 package common.layer;
 
-import static common.model.Color.GREEN;
-import static common.model.Color.RED;
-import static common.model.region.RegionType.BASE;
-import static common.model.region.RegionType.LAND;
-import static common.model.region.RegionType.MINE;
-import static common.model.region.RegionType.WALL;
+import static common.model.game.Color.GREEN;
+import static common.model.game.Color.RED;
+import static common.model.game.RegionType.BASE;
+import static common.model.game.RegionType.LAND;
+import static common.model.game.RegionType.MINE;
+import static common.model.game.RegionType.WALL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
-import common.model.Board;
-import common.model.Color;
-import common.model.Location;
-import common.model.region.Region;
-import common.model.region.RegionType;
+import common.model.game.Board;
+import common.model.game.Color;
+import common.model.game.Location;
+import common.model.game.Region;
+import common.model.game.RegionType;
 
 class HtmlLayerWriterTest {
 
@@ -106,9 +106,9 @@ class HtmlLayerWriterTest {
         // Then
         assertEquals("<table class=\"forces\">" +
                 "<tr><td class=\"\"></td><td class=\"\"></td><td class=\"\"></td><td class=\"\"></td><td class=\"\"></td></tr>" +
-                "<tr><td class=\"\"></td><td class=\"\">1</td><td class=\"\">3</td><td class=\"\">3</td><td class=\"\"></td></tr>" +
-                "<tr><td class=\"\"></td><td class=\"\">3</td><td class=\"\">5</td><td class=\"\">1</td><td class=\"\"></td></tr>" +
-                "<tr><td class=\"\"></td><td class=\"\">3</td><td class=\"\">1</td><td class=\"\">3</td><td class=\"\"></td></tr>" +
+                "<tr><td class=\"\"></td><td class=\"\"></td><td class=\"\">2</td><td class=\"\">2</td><td class=\"\"></td></tr>" +
+                "<tr><td class=\"\"></td><td class=\"\">2</td><td class=\"\">4</td><td class=\"\"></td><td class=\"\"></td></tr>" +
+                "<tr><td class=\"\"></td><td class=\"\">2</td><td class=\"\"></td><td class=\"\">2</td><td class=\"\"></td></tr>" +
                 "<tr><td class=\"\"></td><td class=\"\"></td><td class=\"\"></td><td class=\"\"></td><td class=\"\"></td></tr>" +
                 "</table>", result);
     }

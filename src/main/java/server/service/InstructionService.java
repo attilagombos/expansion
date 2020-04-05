@@ -1,7 +1,7 @@
 package server.service;
 
-import static common.model.StepType.DEPLOY;
-import static common.model.StepType.MOVE;
+import static common.model.dto.instruction.StepType.DEPLOY;
+import static common.model.dto.instruction.StepType.MOVE;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;
@@ -13,10 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
-import common.model.Color;
-import common.model.Instruction;
-import common.model.Step;
-import common.model.StepType;
+import common.model.dto.instruction.Instruction;
+import common.model.dto.instruction.Step;
+import common.model.dto.instruction.StepType;
+import common.model.game.Color;
 
 @Service
 public class InstructionService {

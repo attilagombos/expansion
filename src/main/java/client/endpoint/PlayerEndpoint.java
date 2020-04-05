@@ -27,8 +27,8 @@ import client.configuration.ClientEndpointConfigurator;
 import client.strategy.IStrategy;
 import common.decoder.GameStateDecoder;
 import common.encoder.InstructionEncoder;
-import common.model.GameState;
-import common.model.PlayerState;
+import common.model.dto.GameState;
+import common.model.dto.PlayerState;
 
 @Component
 @ClientEndpoint(

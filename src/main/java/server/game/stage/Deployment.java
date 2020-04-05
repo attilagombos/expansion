@@ -1,7 +1,7 @@
 package server.game.stage;
 
-import static common.model.region.RegionType.BASE;
-import static common.model.region.RegionType.MINE;
+import static common.model.game.RegionType.BASE;
+import static common.model.game.RegionType.MINE;
 import static java.lang.Integer.min;
 
 import java.util.List;
@@ -9,9 +9,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import common.model.Board;
-import common.model.Step;
-import common.model.region.Region;
+import common.model.dto.instruction.Step;
+import common.model.game.Board;
+import common.model.game.Region;
 import server.configuration.GameConfiguration;
 import server.model.Player;
 import server.service.InstructionService;

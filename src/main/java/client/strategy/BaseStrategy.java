@@ -1,10 +1,10 @@
 package client.strategy;
 
-import static common.model.StepType.DEPLOY;
-import static common.model.StepType.MOVE;
-import static common.model.region.RegionType.BASE;
-import static common.model.region.RegionType.MINE;
-import static common.model.region.RegionType.WALL;
+import static common.model.dto.instruction.StepType.DEPLOY;
+import static common.model.dto.instruction.StepType.MOVE;
+import static common.model.game.RegionType.BASE;
+import static common.model.game.RegionType.MINE;
+import static common.model.game.RegionType.WALL;
 import static java.lang.Integer.max;
 import static java.lang.Math.abs;
 import static java.util.Comparator.comparingInt;
@@ -23,14 +23,14 @@ import org.springframework.stereotype.Component;
 import client.model.Grid;
 import client.model.Node;
 import common.layer.ILayerReader;
-import common.model.Board;
-import common.model.BoardState;
-import common.model.GameState;
-import common.model.Instruction;
-import common.model.Location;
-import common.model.PlayerState;
-import common.model.Step;
-import common.model.region.Region;
+import common.model.dto.BoardState;
+import common.model.dto.GameState;
+import common.model.dto.PlayerState;
+import common.model.dto.instruction.Instruction;
+import common.model.dto.instruction.Step;
+import common.model.game.Board;
+import common.model.game.Location;
+import common.model.game.Region;
 
 @Component
 public class BaseStrategy implements IStrategy {

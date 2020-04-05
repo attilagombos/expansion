@@ -1,6 +1,8 @@
-package common.model;
+package common.model.dto.instruction;
 
 import java.io.Serializable;
+
+import common.model.game.Location;
 
 public class Step implements Serializable {
 

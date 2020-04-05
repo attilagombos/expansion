@@ -1,7 +1,7 @@
 package client.strategy;
 
-import common.model.GameState;
-import common.model.Instruction;
+import common.model.dto.GameState;
+import common.model.dto.instruction.Instruction;
 
 public interface IStrategy {
 

@@ -6,7 +6,7 @@ import javax.websocket.EndpointConfig;
 
 import com.google.gson.Gson;
 
-import common.model.Instruction;
+import common.model.dto.instruction.Instruction;
 
 public class InstructionDecoder implements Decoder.Text<Instruction> {
 

@@ -1,4 +1,4 @@
-package common.model;
+package common.model.game;
 
 import static java.util.Arrays.stream;
 

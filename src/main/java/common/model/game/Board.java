@@ -1,7 +1,7 @@
-package common.model;
+package common.model.game;
 
-import static common.model.region.RegionType.BASE;
-import static common.model.region.RegionType.WALL;
+import static common.model.game.RegionType.BASE;
+import static common.model.game.RegionType.WALL;
 import static java.util.Collections.shuffle;
 import static java.util.stream.Collectors.toList;
 
@@ -11,8 +11,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import common.model.region.Region;
 
 public class Board {
 

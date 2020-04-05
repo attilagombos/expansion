@@ -7,15 +7,16 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
-import common.model.Board;
-import common.model.Color;
-import common.model.Location;
-import common.model.region.Region;
-import common.model.region.RegionType;
+import common.model.game.Board;
+import common.model.game.Color;
+import common.model.game.Location;
+import common.model.game.Region;
+import common.model.game.RegionType;
 
 @Component("HtmlWriter")
 public class HtmlLayerWriter implements ILayerWriter {
@@ -31,64 +32,18 @@ public class HtmlLayerWriter implements ILayerWriter {
     private String layoutCache = null;
 
     public String writeLayout(Board board) {
-        if (layoutCache == null) {
-            List<String> rows = new ArrayList<>();
-
-            Pair<Location, Location> dimensions = board.getDimensions();
-            Location begin = dimensions.getLeft();
-            Location end = dimensions.getRight();
-
-            for (int locationY = end.getY(); locationY >= begin.getY(); locationY--) {
-                List<String> row = new ArrayList<>();
-
-                for (int locationX = begin.getX(); locationX <= end.getX(); locationX++) {
-                    Location location = new Location(locationX, locationY);
-                    Region region = board.getRegion(location);
-
-                    RegionType type = region.getType();
-
-                    String classes = type.name().toLowerCase();
-
-                    row.add(format(TABLE_DATA_FORMAT, classes, EMPTY));
-                }
-
-                rows.add(format(TABLE_ROW_FORMAT, join(EMPTY, row)));
-            }
-
-            layoutCache = format(TABLE_FORMAT, LAYOUT, join(EMPTY, rows));
-        }
-
-        return layoutCache;
+        return layoutCache == null ? writeLayer(board, LAYOUT, this::getRegionTypeCell) : layoutCache;
     }
 
     public String writeColors(Board board) {
-        List<String> rows = new ArrayList<>();
-
-        Pair<Location, Location> dimensions = board.getDimensions();
-        Location begin = dimensions.getLeft();
-        Location end = dimensions.getRight();
-
-        for (int locationY = end.getY(); locationY >= begin.getY(); locationY--) {
-            List<String> row = new ArrayList<>();
-
-            for (int locationX = begin.getX(); locationX <= end.getX(); locationX++) {
-                Location location = new Location(locationX, locationY);
-                Region region = board.getRegion(location);
-
-                Color color = region.getColor();
-
-                String classes = color != null ? color.name().toLowerCase() : EMPTY;
-
-                row.add(format(TABLE_DATA_FORMAT, classes, EMPTY));
-            }
-
-            rows.add(format(TABLE_ROW_FORMAT, join(EMPTY, row)));
-        }
-
-        return format(TABLE_FORMAT, COLORS, join(EMPTY, rows));
+        return writeLayer(board, COLORS, this::getColorCell);
     }
 
     public String writeForces(Board board) {
+        return writeLayer(board, FORCES, this::getForcesCell);
+    }
+
+    private String writeLayer(Board board, String tableClass, Function<Region, String> cellWriter) {
         List<String> rows = new ArrayList<>();
 
         Pair<Location, Location> dimensions = board.getDimensions();
@@ -102,14 +57,32 @@ public class HtmlLayerWriter implements ILayerWriter {
                 Location location = new Location(locationX, locationY);
                 Region region = board.getRegion(location);
 
-                String forces =  region.getForces() > 1 ? valueOf(region.getForces() - 1) : EMPTY;
-
-                row.add(format(TABLE_DATA_FORMAT, EMPTY, forces));
+                row.add(cellWriter.apply(region));
             }
 
             rows.add(format(TABLE_ROW_FORMAT, join(EMPTY, row)));
         }
 
-        return format(TABLE_FORMAT, FORCES, join(EMPTY, rows));
+        return format(TABLE_FORMAT, tableClass, join(EMPTY, rows));
+    }
+
+    private String getRegionTypeCell(Region region) {
+        RegionType type = region.getType();
+        String classes = type.name().toLowerCase();
+
+        return format(TABLE_DATA_FORMAT, classes, EMPTY);
+    }
+
+    private String getColorCell(Region region) {
+        Color color = region.getColor();
+        String classes = color != null ? color.name().toLowerCase() : EMPTY;
+
+        return format(TABLE_DATA_FORMAT, classes, EMPTY);
+    }
+
+    private String getForcesCell(Region region) {
+        String forces = region.getForces() > 1 ? valueOf(region.getForces() - 1) : EMPTY;
+
+        return format(TABLE_DATA_FORMAT, EMPTY, forces);
     }
 }

@@ -1,4 +1,4 @@
-package common.model;
+package common.model.dto;
 
 import java.io.Serializable;
 

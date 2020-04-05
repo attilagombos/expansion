@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import common.decoder.InstructionDecoder;
 import common.encoder.GameStateEncoder;
-import common.model.Instruction;
+import common.model.dto.instruction.Instruction;
 import server.configuration.ServerEndpointConfigurator;
 import server.model.Player;
 import server.service.GameService;

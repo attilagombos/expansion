@@ -1,15 +1,15 @@
 package common.layer;
 
-import static common.model.region.RegionType.BASE;
-import static common.model.region.RegionType.LAND;
-import static common.model.region.RegionType.MINE;
-import static common.model.region.RegionType.WALL;
+import static common.model.game.RegionType.BASE;
+import static common.model.game.RegionType.LAND;
+import static common.model.game.RegionType.MINE;
+import static common.model.game.RegionType.WALL;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 
-import common.model.region.RegionType;
+import common.model.game.RegionType;
 
 public class LayoutMapping {
 

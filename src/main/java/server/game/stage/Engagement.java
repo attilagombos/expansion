@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import common.model.Board;
-import common.model.Color;
-import common.model.region.Region;
+import common.model.game.Board;
+import common.model.game.Color;
+import common.model.game.Region;
 
 public class Engagement {
 

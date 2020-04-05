@@ -1,8 +1,11 @@
-package common.model;
+package common.model.dto;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+import common.model.dto.instruction.Instruction;
+import common.model.game.Color;
 
 public class GameState implements Serializable {
 
@@ -10,7 +13,7 @@ public class GameState implements Serializable {
 
     private Integer rounds;
 
-    private BoardState boardState = new BoardState();
+    private BoardState boardState;
 
     private List<PlayerState> playerStates;
 

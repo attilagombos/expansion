@@ -1,12 +1,12 @@
 package server.game.stage;
 
-import static common.model.region.RegionType.BASE;
-import static common.model.region.RegionType.LAND;
-import static common.model.region.RegionType.MINE;
+import static common.model.game.RegionType.BASE;
+import static common.model.game.RegionType.LAND;
+import static common.model.game.RegionType.MINE;
 
 import java.util.List;
 
-import common.model.region.Region;
+import common.model.game.Region;
 import server.configuration.GameConfiguration;
 import server.model.Player;
 import server.service.PlayerService;

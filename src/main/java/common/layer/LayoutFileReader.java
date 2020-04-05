@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import common.model.Board;
-import common.model.Location;
-import common.model.region.Region;
-import common.model.region.RegionType;
+import common.model.game.Board;
+import common.model.game.Location;
+import common.model.game.Region;
+import common.model.game.RegionType;
 
 @Component
 public class LayoutFileReader {

@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import common.layer.LayoutFileReader;
-import common.model.Board;
-import common.model.PlayerState;
-import common.model.region.Region;
+import common.model.dto.PlayerState;
+import common.model.game.Board;
+import common.model.game.Region;
 import server.configuration.GameConfiguration;
 import server.game.Game;
 import server.model.Player;
