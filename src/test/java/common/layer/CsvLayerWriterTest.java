@@ -1,11 +1,12 @@
 package common.layer;
 
+import static common.layer.RegionTestHelper.region;
+import static common.layer.RegionTestHelper.wall;
 import static common.model.game.Color.GREEN;
 import static common.model.game.Color.RED;
 import static common.model.game.RegionType.BASE;
 import static common.model.game.RegionType.LAND;
 import static common.model.game.RegionType.MINE;
-import static common.model.game.RegionType.WALL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -16,10 +17,7 @@ import org.junit.jupiter.api.Test;
 import com.google.common.collect.ImmutableList;
 
 import common.model.game.Board;
-import common.model.game.Color;
-import common.model.game.Location;
 import common.model.game.Region;
-import common.model.game.RegionType;
 
 class CsvLayerWriterTest {
 
@@ -109,20 +107,5 @@ class CsvLayerWriterTest {
                 "####,   3,   5,   1,####\r\n" +
                 "####,   3,   1,   3,####\r\n" +
                 "####,####,####,####,####", result);
-    }
-
-    private Region wall(int x, int y) {
-        return region(x, y, WALL, null, 0);
-    }
-
-    private Region region(int x, int y, RegionType type, Color color, int forces) {
-        Location location = new Location(x, y);
-
-        Region region = new Region(location, type);
-
-        region.setColor(color);
-        region.setForces(forces);
-
-        return region;
     }
 }

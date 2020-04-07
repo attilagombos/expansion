@@ -61,4 +61,9 @@ public class Region {
     public String getCoordinates() {
         return location.getCoordinates();
     }
+
+    @Override
+    public String toString() {
+        return location.getCoordinates();
+    }
 }

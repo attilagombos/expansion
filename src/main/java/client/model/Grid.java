@@ -6,6 +6,10 @@ public class Grid<T> {
 
     private final MultiKeyMap<Integer, Node<T>> nodes = new MultiKeyMap<>();
 
+    private int sizeX;
+
+    private int sizeY;
+
     public void addNodes(MultiKeyMap<Integer, T> values) {
         values.forEach((key, value) -> {
             Node<T> node = new Node<>(value);
@@ -24,7 +28,10 @@ public class Grid<T> {
                 }
             }
 
-            nodes.put(key.getKey(0), key.getKey(1), node);
+            nodes.put(x, y, node);
+
+            if (sizeX < x) sizeX = x;
+            if (sizeY < y) sizeY = y;
         });
     }
 
@@ -38,5 +45,13 @@ public class Grid<T> {
 
     public MultiKeyMap<Integer, Node<T>> getNodes() {
         return nodes;
+    }
+
+    public int getSizeX() {
+        return sizeX;
+    }
+
+    public int getSizeY() {
+        return sizeY;
     }
 }

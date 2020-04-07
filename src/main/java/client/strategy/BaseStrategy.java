@@ -7,6 +7,7 @@ import static common.model.game.RegionType.MINE;
 import static common.model.game.RegionType.WALL;
 import static java.lang.Integer.max;
 import static java.lang.Math.abs;
+import static java.lang.System.nanoTime;
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toSet;
 
@@ -16,12 +17,17 @@ import java.util.Set;
 
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import client.endpoint.PlayerEndpoint;
 import client.model.Grid;
 import client.model.Node;
+import client.strategy.path.BreadthFirstSearch;
+import client.strategy.path.IShortestPath;
 import common.layer.ILayerReader;
 import common.model.dto.BoardState;
 import common.model.dto.GameState;
@@ -35,7 +41,11 @@ import common.model.game.Region;
 @Component
 public class BaseStrategy implements IStrategy {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PlayerEndpoint.class);
+
     private final ILayerReader layerReader;
+
+    private IShortestPath<Region> shortestPath;
 
     private Board board = null;
 
@@ -48,6 +58,8 @@ public class BaseStrategy implements IStrategy {
 
     @Override
     public Instruction getInstruction(GameState gameState) {
+        long loopStartNanos = nanoTime();
+
         BoardState boardState = gameState.getBoardState();
 
         initializeGrid(boardState);
@@ -79,7 +91,10 @@ public class BaseStrategy implements IStrategy {
 
                 for (Node<Region> border : closestBorders) {
                     if (forcesToMove > 0) {
-                        Node<Region> closestAdjacent = getClosestAdjacent(inner, border);
+                        Node<Region> closestAdjacent = shortestPath.getNext(inner, border);
+                        if (closestAdjacent == null) {
+                            closestAdjacent = getClosestAdjacent(inner, border);
+                        }
                         instruction.addStep(new Step(MOVE, inner.getValue().getLocation(), closestAdjacent.getValue().getLocation(), 1));
                         forcesToMove--;
                     } else {
@@ -164,6 +179,10 @@ public class BaseStrategy implements IStrategy {
             }
         }
 
+        long processingNanos = nanoTime() - loopStartNanos;
+
+        LOG.info("Processing took {} ms", ((double) processingNanos) / 1000000);
+
         return instruction;
     }
 
@@ -186,6 +205,8 @@ public class BaseStrategy implements IStrategy {
         grid = new Grid<>();
 
         grid.addNodes(regions);
+
+        shortestPath = new BreadthFirstSearch<>(grid.getSizeX() + grid.getSizeY());
     }
 
     private Set<Node<Region>> getTerritory(PlayerState playerState) {

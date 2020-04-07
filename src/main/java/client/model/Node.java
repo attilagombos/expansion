@@ -42,4 +42,9 @@ public class Node<T> {
     public void setVisited(boolean visited) {
         this.visited = visited;
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }

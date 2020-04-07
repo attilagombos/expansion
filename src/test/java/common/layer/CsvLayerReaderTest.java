@@ -1,10 +1,11 @@
 package common.layer;
 
+import static common.layer.RegionTestHelper.region;
+import static common.layer.RegionTestHelper.wall;
 import static common.model.game.Color.GREEN;
 import static common.model.game.RegionType.BASE;
 import static common.model.game.RegionType.LAND;
 import static common.model.game.RegionType.MINE;
-import static common.model.game.RegionType.WALL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -18,7 +19,6 @@ import com.google.common.collect.ImmutableList;
 import common.model.game.Board;
 import common.model.game.Location;
 import common.model.game.Region;
-import common.model.game.RegionType;
 
 class CsvLayerReaderTest {
 
@@ -110,15 +110,5 @@ class CsvLayerReaderTest {
         Region region = board.getRegion(new Location(3, 1));
         assertNotNull(region);
         assertEquals(3, region.getForces());
-    }
-
-    private Region wall(int x, int y) {
-        return region(x, y, WALL);
-    }
-
-    private Region region(int x, int y, RegionType type) {
-        Location location = new Location(x, y);
-
-        return new Region(location, type);
     }
 }

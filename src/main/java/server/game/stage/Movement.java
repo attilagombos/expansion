@@ -1,6 +1,7 @@
 package server.game.stage;
 
 import static java.lang.Integer.min;
+import static java.lang.Math.abs;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import common.model.dto.instruction.Step;
 import common.model.game.Board;
+import common.model.game.Location;
 import common.model.game.Region;
 import server.model.Player;
 import server.service.InstructionService;
@@ -51,6 +53,14 @@ public class Movement {
     }
 
     private static boolean isInvalidMovement(Step movement, Region source, Region target) {
-        return source == null || target == null || movement.getForces() == null || movement.getForces() == 0;
+        return source == null || target == null
+                || isNotAdjacent(source, target)
+                || movement.getForces() == null || movement.getForces() == 0;
+    }
+
+    private static boolean isNotAdjacent(Region source, Region target) {
+        Location from = source.getLocation();
+        Location to = target.getLocation();
+        return abs(from.getX() - to.getX()) > 1 || abs(from.getY() - to.getY()) > 1;
     }
 }
