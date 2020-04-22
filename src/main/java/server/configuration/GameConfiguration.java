@@ -14,6 +14,7 @@ public class GameConfiguration {
     private static final String PLAYER_LIMIT_PROPERTY = "game.player.limit";
     private static final String LOOP_PERIOD_PROPERTY = "game.loop.period";
     private static final String AUTO_DEPLOY_PROPERTY = "game.auto.deploy";
+    private static final String BASE_DEPLOY_PROPERTY = "game.base.deploy";
     private static final String BASE_VALUE_PROPERTY = "game.base.value";
     private static final String MINE_VALUE_PROPERTY = "game.mine.value";
     private static final String LAND_VALUE_PROPERTY = "game.land.value";
@@ -23,6 +24,7 @@ public class GameConfiguration {
     private static final long DEFAULT_LOOP_PERIOD = 1000L;
     private static final boolean DEFAULT_AUTO_DEPLOY = FALSE;
 
+    private static final double DEFAULT_BASE_DEPLOY = 0.0;
     private static final double DEFAULT_BASE_VALUE = 8.0;
     private static final double DEFAULT_MINE_VALUE = 1.0;
     private static final double DEFAULT_LAND_VALUE = 0.0/16.0;
@@ -48,6 +50,10 @@ public class GameConfiguration {
 
     public boolean isAutoDeploy() {
         return ofNullable(environment.getProperty(AUTO_DEPLOY_PROPERTY, Boolean.class)).orElse(DEFAULT_AUTO_DEPLOY);
+    }
+
+    public double getBaseDeploy() {
+        return ofNullable(environment.getProperty(BASE_DEPLOY_PROPERTY, Double.class)).orElse(DEFAULT_BASE_DEPLOY);
     }
 
     public double getBaseValue() {

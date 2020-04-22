@@ -3,6 +3,7 @@ package server.game.stage;
 import static java.lang.Integer.min;
 import static java.lang.Math.abs;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -29,13 +30,19 @@ public class Movement {
     }
 
     private static void moveForPlayer(Board board, Player player, List<Step> movements) {
-        for (Step movement : movements) {
+        Iterator<Step> iterator = movements.iterator();
+
+        while (iterator.hasNext()) {
+            Step movement = iterator.next();
+
             Region source = board.getRegion(movement.getSource());
             Region target = board.getRegion(movement.getTarget());
 
-            if (isInvalidMovement(movement, source, target)) {
-                LOG.warn("Invalid movement. Player color : {}, movement: {}", player.getColor(), movement);
-            } else if (source.getColor() == player.getColor()) {
+            if (isInvalidMovement(movement, source, target, player)) {
+                LOG.warn("Not valid region for movement. Player color: {}, source region: {} color {}",
+                        player.getColor(), source.getLocation(), source.getColor());
+                iterator.remove();
+            } else {
                 int forcesToMove = min(source.getForces(), movement.getForces());
 
                 source.setForces(source.getForces() - forcesToMove);
@@ -45,22 +52,21 @@ public class Movement {
                 }
 
                 target.addChange(player.getColor(), forcesToMove);
-            } else {
-                LOG.warn("Not valid region for movement. Player color: {}, source region: {} color {}",
-                        player.getColor(), source.getLocation(), source.getColor());
             }
         }
     }
 
-    private static boolean isInvalidMovement(Step movement, Region source, Region target) {
+    private static boolean isInvalidMovement(Step movement, Region source, Region target, Player player) {
         return source == null || target == null
                 || isNotAdjacent(source, target)
-                || movement.getForces() == null || movement.getForces() == 0;
+                || movement.getForces() == null || movement.getForces() == 0
+                || source.getColor() != player.getColor();
     }
 
     private static boolean isNotAdjacent(Region source, Region target) {
         Location from = source.getLocation();
         Location to = target.getLocation();
+
         return abs(from.getX() - to.getX()) > 1 || abs(from.getY() - to.getY()) > 1;
     }
 }

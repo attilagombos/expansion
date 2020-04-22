@@ -6,7 +6,6 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,12 +22,20 @@ public class InstructionService {
 
     private final Map<Color, Instruction> instructionCache = new ConcurrentHashMap<>();
 
+    private final Map<Color, Instruction> instructions = new ConcurrentHashMap<>();
+
     public void updateInstruction(Color color, Instruction instruction) {
-        instructionCache.put(color, instruction);
+        instructions.put(color, instruction);
+    }
+
+    public boolean hasInstructions() {
+        return isNotEmpty(instructions);
     }
 
     public void clearInstructions() {
         instructionCache.clear();
+        instructionCache.putAll(instructions);
+        instructions.clear();
     }
 
     public List<Step> getDeployments(Color color) {
@@ -40,7 +47,7 @@ public class InstructionService {
     }
 
     private List<Step> getStepsByType(Color color, StepType type) {
-        Instruction instruction = instructionCache.get(color);
+        Instruction instruction = instructions.get(color);
 
         if (instruction != null) {
             return instruction.getSteps()
@@ -52,11 +59,7 @@ public class InstructionService {
         return emptyList();
     }
 
-    public boolean hasInstructions() {
-        return isNotEmpty(instructionCache);
-    }
-
     public Map<Color, Instruction> getInstructionCache() {
-        return new HashMap<>(instructionCache);
+        return instructionCache;
     }
 }

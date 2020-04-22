@@ -4,6 +4,7 @@ import static common.model.game.RegionType.BASE;
 import static common.model.game.RegionType.MINE;
 import static java.lang.Integer.min;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -38,13 +39,19 @@ public class Deployment {
     private static void deployForPlayer(Board board, Player player, List<Step> deployments) {
         int reinforcements = player.getReinforcements();
 
-        for (Step deployment : deployments) {
+        Iterator<Step> iterator = deployments.iterator();
+
+        while (iterator.hasNext()) {
+            Step deployment = iterator.next();
+
             if (reinforcements > 0) {
                 Region target = board.getRegion(deployment.getTarget());
 
-                if (isInvalidDeployment(deployment, target)) {
-                    LOG.warn("Invalid deployment. Player color : {}, deployment: {}", player.getColor(), deployment);
-                } else if (target.getColor() == player.getColor()) {
+                if (isInvalidDeployment(deployment, target, player)) {
+                    LOG.warn("Not valid region for deployment. Player color: {}, target region: {} color {}",
+                            player.getColor(), target.getCoordinates(), target.getColor());
+                    iterator.remove();
+                } else {
                     int forcesToDeploy = min(reinforcements, deployment.getForces());
 
                     target.setForces(target.getForces() + forcesToDeploy);
@@ -52,9 +59,6 @@ public class Deployment {
                     LOG.debug("{} player deployed {} forces to region {}", player.getColor(), forcesToDeploy, target.getCoordinates());
 
                     reinforcements -= forcesToDeploy;
-                } else {
-                    LOG.warn("Not valid region for deployment. Player color: {}, target region: {} color {}",
-                            player.getColor(), target.getCoordinates(), target.getColor());
                 }
             } else {
                 LOG.warn("No reinforcements have left");
@@ -75,7 +79,10 @@ public class Deployment {
         }
     }
 
-    private static boolean isInvalidDeployment(Step deployment, Region target) {
-        return target == null || deployment.getForces() == null || deployment.getForces() == 0;
+    private static boolean isInvalidDeployment(Step deployment, Region target, Player player) {
+        return target == null
+                || deployment.getForces() == null
+                || deployment.getForces() == 0
+                || target.getColor() != player.getColor();
     }
 }

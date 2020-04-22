@@ -120,6 +120,8 @@ public class Game implements Runnable {
 
                 move(board, playerService, instructionService);
 
+                instructionService.clearInstructions();
+
                 engage(board);
             }
 

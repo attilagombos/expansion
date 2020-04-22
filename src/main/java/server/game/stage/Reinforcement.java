@@ -15,27 +15,32 @@ public class Reinforcement {
 
     public static void reinforce(PlayerService playerService, GameConfiguration gameConfiguration) {
         for (Player player : playerService.getPlayerMapping()) {
+            double reinforcements = 0.0;
+
             List<Region> territory = player.getTerritory();
-            int reinforcements;
 
-            double forcesForLands = territory.stream()
-                    .filter(region -> region.getType() == LAND)
-                    .count() * gameConfiguration.getLandValue();
+            if (territory.size() > 0) {
+                reinforcements = gameConfiguration.getBaseDeploy();
 
-            if (gameConfiguration.isAutoDeploy()) {
-                reinforcements = new Double(forcesForLands).intValue();
-            } else {
-                double forcesForBases = territory.stream()
-                        .filter(region -> region.getType() == BASE)
-                        .count() * gameConfiguration.getBaseValue();
-                double forcesForMines = territory.stream()
-                        .filter(region -> region.getType() == MINE)
-                        .count() * gameConfiguration.getMineValue();
+                double forcesForLands = territory.stream()
+                        .filter(region -> region.getType() == LAND)
+                        .count() * gameConfiguration.getLandValue();
 
-                reinforcements = new Double(forcesForBases + forcesForMines + forcesForLands).intValue();
+                if (gameConfiguration.isAutoDeploy()) {
+                    reinforcements += forcesForLands;
+                } else {
+                    double forcesForBases = territory.stream()
+                            .filter(region -> region.getType() == BASE)
+                            .count() * gameConfiguration.getBaseValue();
+                    double forcesForMines = territory.stream()
+                            .filter(region -> region.getType() == MINE)
+                            .count() * gameConfiguration.getMineValue();
+
+                    reinforcements += forcesForBases + forcesForMines + forcesForLands;
+                }
             }
 
-            player.setReinforcements(player.getReinforcements() + reinforcements);
+            player.setReinforcements(player.getReinforcements() + (int) reinforcements);
         }
     }
 }
