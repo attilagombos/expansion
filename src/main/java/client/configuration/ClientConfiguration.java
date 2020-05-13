@@ -19,7 +19,7 @@ public class ClientConfiguration {
     private static final String DEFAULT_SERVER_HOST = "localhost";
     private static final int DEFAULT_SERVER_PORT = 8080;
 
-    private static final String WEB_SOCKET_SERVER_URI_FORMAT = "ws://%s:%d/%s%s";
+    private static final String WEB_SOCKET_SERVER_URI_FORMAT = "ws://%s:%d%s%s";
 
     private final Environment environment;
 
