@@ -20,13 +20,13 @@ public class Reinforcement {
             List<Region> territory = player.getTerritory();
 
             if (territory.size() > 0) {
-                reinforcements = gameConfiguration.getBaseDeploy();
+                reinforcements = gameConfiguration.getDefaultDeploy();
 
                 double forcesForLands = territory.stream()
                         .filter(region -> region.getType() == LAND)
                         .count() * gameConfiguration.getLandValue();
 
-                if (gameConfiguration.isAutoDeploy()) {
+                if (gameConfiguration.isBoundDeploy()) {
                     reinforcements += forcesForLands;
                 } else {
                     double forcesForBases = territory.stream()

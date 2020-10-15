@@ -47,12 +47,12 @@ class CsvLayerWriterTest {
         String result = underTest.writeLayout(board);
 
         // Then
-        assertEquals("" +
-                        "#,#,#,#,#\r\n" +
-                        "#,@, ,$,#\r\n" +
-                        "#, , , ,#\r\n" +
-                        "#,$, ,@,#\r\n" +
-                        "#,#,#,#,#", result);
+        assertEquals("""
+                #,#,#,#,#\r
+                #,@, ,$,#\r
+                #, , , ,#\r
+                #,$, ,@,#\r
+                #,#,#,#,#""", result);
     }
 
     @Test
@@ -74,12 +74,12 @@ class CsvLayerWriterTest {
         String result = underTest.writeColors(board);
 
         // Then
-        assertEquals("" +
-                "#,#,#,#,#\r\n" +
-                "#,1,1,2,#\r\n" +
-                "#,1,1,2,#\r\n" +
-                "#,2,2,2,#\r\n" +
-                "#,#,#,#,#", result);
+        assertEquals("""
+                #,#,#,#,#\r
+                #,1,1,2,#\r
+                #,1,1,2,#\r
+                #,2,2,2,#\r
+                #,#,#,#,#""", result);
     }
 
     @Test
@@ -101,11 +101,11 @@ class CsvLayerWriterTest {
         String result = underTest.writeForces(board);
 
         // Then
-        assertEquals("" +
-                "####,####,####,####,####\r\n" +
-                "####,   1,   3,   3,####\r\n" +
-                "####,   3,   5,   1,####\r\n" +
-                "####,   3,   1,   3,####\r\n" +
-                "####,####,####,####,####", result);
+        assertEquals("""
+                ####,####,####,####,####\r
+                ####,   1,   3,   3,####\r
+                ####,   3,   5,   1,####\r
+                ####,   3,   1,   3,####\r
+                ####,####,####,####,####""", result);
     }
 }

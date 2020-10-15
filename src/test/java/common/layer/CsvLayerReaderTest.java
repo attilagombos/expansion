@@ -32,12 +32,12 @@ class CsvLayerReaderTest {
     @Test
     void shouldReadLayout() {
         // Given
-        String layout = "" +
-                "#,#,#,#,#\r\n" +
-                "#,@, ,$,#\r\n" +
-                "#, , , ,#\r\n" +
-                "#,$, ,@,#\r\n" +
-                "#,#,#,#,#";
+        String layout = """
+                #,#,#,#,#\r
+                #,@, ,$,#\r
+                #, , , ,#\r
+                #,$, ,@,#\r
+                #,#,#,#,#""";
 
         // When
         Board result = underTest.readLayout(layout);
@@ -65,12 +65,12 @@ class CsvLayerReaderTest {
 
         regions.forEach(board::putRegion);
 
-        String colors = "" +
-                "#,#,#,#,#\r\n" +
-                "#,1,1,2,#\r\n" +
-                "#,1,1,2,#\r\n" +
-                "#,2,2,2,#\r\n" +
-                "#,#,#,#,#";
+        String colors = """
+                #,#,#,#,#\r
+                #,1,1,2,#\r
+                #,1,1,2,#\r
+                #,2,2,2,#\r
+                #,#,#,#,#""";
 
         // When
         underTest.readColors(board, colors);
@@ -96,12 +96,12 @@ class CsvLayerReaderTest {
 
         regions.forEach(board::putRegion);
 
-        String forces = "" +
-                "####,####,####,####,####\r\n" +
-                "####,   1,   3,   3,####\r\n" +
-                "####,   3,   5,   1,####\r\n" +
-                "####,   3,   1,   3,####\r\n" +
-                "####,####,####,####,####";
+        String forces = """
+                ####,####,####,####,####\r
+                ####,   1,   3,   3,####\r
+                ####,   3,   5,   1,####\r
+                ####,   3,   1,   3,####\r
+                ####,####,####,####,####""";
 
         // When
         underTest.readForces(board, forces);

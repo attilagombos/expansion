@@ -60,7 +60,7 @@ public class Game implements Runnable {
     public void run() {
         isRunning = true;
 
-        isAutoDeploy = gameConfiguration.isAutoDeploy();
+        isAutoDeploy = gameConfiguration.isBoundDeploy();
 
         LOG.info("Game started");
 

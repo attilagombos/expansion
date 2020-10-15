@@ -72,9 +72,9 @@ public class Deployment {
     private static void autoDeployForPlayer(Player player, GameConfiguration gameConfiguration) {
         for (Region region : player.getTerritory()) {
             if (region.getType() == BASE) {
-                region.setForces(region.getForces() + (int) gameConfiguration.getBaseValue());
+                region.setForces(region.getForces() + gameConfiguration.getBaseValue());
             } else if (region.getType() == MINE) {
-                region.setForces(region.getForces() + (int) gameConfiguration.getMineValue());
+                region.setForces(region.getForces() + gameConfiguration.getMineValue());
             }
         }
     }
